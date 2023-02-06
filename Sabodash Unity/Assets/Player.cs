@@ -9,9 +9,9 @@ public class Player : MonoBehaviour
     float horizontal_accel_speed = 0.05f;
     float maxvel_x = 6f;
 
-    float fly_cap = 2f;
+    float fly_cap = 6f;
     float fly_accel = 0.05f;
-    float jumpstrength = 4f;
+    float jumpstrength = 2.5f;
 
     // Variables
     public Rigidbody2D rigbod;
@@ -26,12 +26,21 @@ public class Player : MonoBehaviour
 
     bool IsGrounded()
     {
-        float tolerance = 0.01f;
-        RaycastHit2D ground_raycast = Physics2D.Raycast(boxcollider.bounds.center, Vector2.down, boxcollider.bounds.extents.y + tolerance);
-        Debug.Log(boxcollider.bounds.extents.y);
+        float tolerance = 0.05f;
+
+
+        Vector3 raycast_origin = boxcollider.bounds.center + (Vector3)Vector2.down * boxcollider.bounds.extents.y;
+        Debug.Log(raycast_origin);
+        RaycastHit2D ground_raycast = Physics2D.Raycast(raycast_origin, Vector2.down, tolerance);
 
         Color rayColor;
-        if (ground_raycast.collider != null)
+
+        bool on_ground = false;
+        if (ground_raycast.collider != null) {
+            on_ground = true;
+        }
+
+        if (on_ground)
         {
            rayColor = Color.green;
         } else
@@ -39,8 +48,8 @@ public class Player : MonoBehaviour
            rayColor = Color.red;
         }
 
-        Debug.DrawRay(boxcollider.bounds.center, Vector2.down * (boxcollider.bounds.extents.y*2 + tolerance), rayColor);
-        return (ground_raycast.collider != null);
+        Debug.DrawRay(raycast_origin, Vector2.down * tolerance, rayColor);
+        return (on_ground);
     }
 
     void MoveAnywhere()

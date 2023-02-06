@@ -354,7 +354,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 1
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1523,6 +1523,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 5381761980487349185, guid: 77d9e9439816a3f4c80ca418cdccd7de, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 8166247680433522923, guid: 77d9e9439816a3f4c80ca418cdccd7de, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -1537,11 +1541,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8166247680433522923, guid: 77d9e9439816a3f4c80ca418cdccd7de, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -10.15
+      value: -5.03
       objectReference: {fileID: 0}
     - target: {fileID: 8166247680433522923, guid: 77d9e9439816a3f4c80ca418cdccd7de, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -3.72
+      value: -4.28
       objectReference: {fileID: 0}
     - target: {fileID: 8166247680433522923, guid: 77d9e9439816a3f4c80ca418cdccd7de, type: 3}
       propertyPath: m_LocalPosition.z
