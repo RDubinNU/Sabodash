@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
@@ -10,15 +11,14 @@ public class Player : MonoBehaviour
     float maxvel_x = 6f;
 
     float fly_cap = 6f;
-    float fly_accel = 0.05f;
+    float fly_accel = 0.5f;
     float jumpstrength = 2.5f;
 
     // Variables
     public Rigidbody2D rigbod;
     public BoxCollider2D boxcollider;
 
-    void Start()
-    {
+    void Start() {
         rigbod = GetComponent<Rigidbody2D>();
         boxcollider = GetComponent<BoxCollider2D>();
     }
@@ -52,55 +52,36 @@ public class Player : MonoBehaviour
         return (on_ground);
     }
 
-    void MoveAnywhere()
-    {
-
+    void MoveAnywhere(){
         // Horizontal acceleration control
         float accel_x = Convert.ToInt32(Input.GetKey("right")) - Convert.ToInt32(Input.GetKey("left"));
         accel_x = accel_x * horizontal_accel_speed;
 
-
         // Flying and jump control
-
         bool grounded = IsGrounded();
         float accel_y = 0;
 
-        if (Input.GetKey("up"))
-        {
-            
-            if (grounded)
-            {
-                accel_y = jumpstrength;
-            }
-            else
-            {
-                accel_y = fly_accel;
-            }
+        if (Input.GetKey("up")){
+            if (grounded) accel_y = jumpstrength;
+            else accel_y = fly_accel;
         }
 
 
         // Acceleration Application
 
         // Horizontal velocity squash
-        if (Math.Abs(rigbod.velocity.x) > maxvel_x)
-        {
+        if (Math.Abs(rigbod.velocity.x) > maxvel_x){
             accel_x = 0;
         }
 
         // Vertical velocity squash
-        if (Math.Abs(rigbod.velocity.y) > fly_cap)
-        {
+        if (Math.Abs(rigbod.velocity.y) > fly_cap){
             accel_y = 0;
         }
 
 
-        Vector2 acceleration = new Vector2(accel_x,
-                                           accel_y);
-
-
+        Vector2 acceleration = new Vector2(accel_x, accel_y);
         rigbod.velocity = rigbod.velocity + acceleration;
-
-
     }
 
 
