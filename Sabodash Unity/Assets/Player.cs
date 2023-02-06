@@ -5,48 +5,99 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    //Parameters
-    float speed = 0.1f;
-    float flyspeed = 0.15f;
-    float maxvel = 8f;
-    float jumpstrength = 10f;
+    // Parameters
+    float horizontal_accel_speed = 0.05f;
+    float maxvel_x = 6f;
 
-    //Variables
+    float fly_cap = 2f;
+    float fly_accel = 0.05f;
+    float jumpstrength = 4f;
+
+    // Variables
     public Rigidbody2D rigbod;
-    private bool jumped = false;
+    public BoxCollider2D boxcollider;
 
     void Start()
     {
         rigbod = GetComponent<Rigidbody2D>();
+        boxcollider = GetComponent<BoxCollider2D>();
+    }
+
+
+    bool IsGrounded()
+    {
+        float tolerance = 0.01f;
+        RaycastHit2D ground_raycast = Physics2D.Raycast(boxcollider.bounds.center, Vector2.down, boxcollider.bounds.extents.y + tolerance);
+        Debug.Log(boxcollider.bounds.extents.y);
+
+        Color rayColor;
+        if (ground_raycast.collider != null)
+        {
+           rayColor = Color.green;
+        } else
+        {
+           rayColor = Color.red;
+        }
+
+        Debug.DrawRay(boxcollider.bounds.center, Vector2.down * (boxcollider.bounds.extents.y*2 + tolerance), rayColor);
+        return (ground_raycast.collider != null);
     }
 
     void MoveAnywhere()
     {
-        var horizontalInc = Convert.ToInt32(Input.GetKey("right")) - Convert.ToInt32(Input.GetKey("left"));
-        var verticalInc = Convert.ToInt32(Input.GetKey("up")) - Convert.ToInt32(Input.GetKey("down"));
-        var dir = new Vector2(horizontalInc * speed, verticalInc * flyspeed);
-        //Debug.Log(dir);
-        rigbod.velocity = rigbod.velocity + dir;
-        if(rigbod.velocity.magnitude > maxvel){
-            rigbod.velocity = rigbod.velocity / rigbod.velocity.magnitude * maxvel;
+
+        // Horizontal acceleration control
+        float accel_x = Convert.ToInt32(Input.GetKey("right")) - Convert.ToInt32(Input.GetKey("left"));
+        accel_x = accel_x * horizontal_accel_speed;
+
+
+        // Flying and jump control
+
+        bool grounded = IsGrounded();
+        float accel_y = 0;
+
+        if (Input.GetKey("up"))
+        {
+            
+            if (grounded)
+            {
+                accel_y = jumpstrength;
+            }
+            else
+            {
+                accel_y = fly_accel;
+            }
         }
-        if (Input.GetKey(KeyCode.Space) && !jumped){
-            rigbod.velocity = rigbod.velocity + new Vector2(0, jumpstrength);
-            jumped = true;
+
+
+        // Acceleration Application
+
+        // Horizontal velocity squash
+        if (Math.Abs(rigbod.velocity.x) > maxvel_x)
+        {
+            accel_x = 0;
         }
-        if (!Input.GetKey(KeyCode.Space)){
-            jumped = false;
+
+        // Vertical velocity squash
+        if (Math.Abs(rigbod.velocity.y) > fly_cap)
+        {
+            accel_y = 0;
         }
+
+
+        Vector2 acceleration = new Vector2(accel_x,
+                                           accel_y);
+
+
+        rigbod.velocity = rigbod.velocity + acceleration;
+
+
     }
 
-    // Update is called once per frame
+
     void Update()
     {
         MoveAnywhere();
     }
 
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        if(collision.collider.tag == ""){}
-    }
 }
