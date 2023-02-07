@@ -101,7 +101,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
+  m_LinearDrag: 0.1
   m_AngularDrag: 0.05
   m_GravityScale: 2
   m_Material: {fileID: 0}
@@ -149,6 +149,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   rigbod: {fileID: 0}
   boxcollider: {fileID: 0}
+  sprite: {fileID: 0}
 --- !u!114 &8758057591487631587
 MonoBehaviour:
   m_ObjectHideFlags: 0
