@@ -22,6 +22,7 @@ public class Player : MonoBehaviour
     // Variables
     public Rigidbody2D rigbod;
     public BoxCollider2D boxcollider;
+    public SpriteRenderer sprite;
 
     void Start() {
         rigbod = GetComponent<Rigidbody2D>();
@@ -29,6 +30,8 @@ public class Player : MonoBehaviour
         input = GetComponent<PlayerInput>();
         lr = input.actions["LR"];
         jump = input.actions["Jump"];
+        sprite = GetComponent<SpriteRenderer>();
+        sprite.color = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
     }
     void Update()
     {
@@ -71,22 +74,22 @@ public class Player : MonoBehaviour
             else accel_y = fly_accel;
         }
 
-
         // Acceleration Application
-
         // Horizontal velocity squash
         if (Math.Abs(rigbod.velocity.x) > maxvel_x){
             accel_x = 0;
         }
-
         // Vertical velocity squash
         if (Math.Abs(rigbod.velocity.y) > fly_cap){
             accel_y = 0;
         }
 
-
         Vector2 acceleration = new Vector2(accel_x, accel_y);
         rigbod.velocity = rigbod.velocity + acceleration;
+
+        if(grounded && accel_x == 0){
+            rigbod.velocity = new Vector2(rigbod.velocity.x * 0.95f, rigbod.velocity.y);
+        }
     }
 
 }
