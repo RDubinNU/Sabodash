@@ -36,8 +36,6 @@ public class Player : MonoBehaviour
     void Update()
     {
         MoveAnywhere();
-        UnityEngine.Debug.Log(lr.ReadValue<float>());
-        UnityEngine.Debug.Log(jump.ReadValue<float>());
     }
 
     bool IsGrounded()
@@ -45,7 +43,6 @@ public class Player : MonoBehaviour
         float tolerance = 0.05f;
 
         Vector3 raycast_origin = boxcollider.bounds.center + (Vector3)Vector2.down * boxcollider.bounds.extents.y;
-        UnityEngine.Debug.Log(raycast_origin);
         RaycastHit2D ground_raycast = Physics2D.Raycast(raycast_origin, Vector2.down, tolerance);
 
         Color rayColor;
