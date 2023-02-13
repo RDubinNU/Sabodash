@@ -8,7 +8,7 @@ public class SideScroll : MonoBehaviour
     public float scrollAmount;
     void Start()
     {
-        scrollAmount = 0.001f;
+        scrollAmount = 0.005f;
     }
 
     // Update is called once per frame
