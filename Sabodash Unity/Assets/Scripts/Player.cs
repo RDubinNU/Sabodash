@@ -1,4 +1,5 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -36,8 +37,15 @@ public class Player : MonoBehaviour
     }
     void Update()
     {
-        grounded = IsGrounded();
-        MoveAnywhere();
+        // Temp starting behaviour
+        if (Input.GetKey("p"))
+        {
+            GameState.gameStarted = true;
+        }
+
+         grounded = IsGrounded();
+         MoveAnywhere();
+
     }
 
     bool IsGrounded()
@@ -53,7 +61,6 @@ public class Player : MonoBehaviour
             on_ground = true;
         }
 
-        Debug.Log(on_ground);
         return (on_ground);
     }
 
@@ -75,8 +82,8 @@ public class Player : MonoBehaviour
             if (grounded & Time.time > last_jump + jump_cd)
             {
                 accel_y = jumpstrength;
+                rigbod.angularVelocity = 300f * Math.Sign(rigbod.velocity.x);
                 last_jump = Time.time;
-                Debug.Log("jumped");
             }
             else if ((Time.time > last_jump + fly_delay) && rigbod.velocity.y + fly_accel <= max_vel_y)
             {
@@ -92,6 +99,16 @@ public class Player : MonoBehaviour
         // Frictional Slowing
         if(grounded && accel_x == 0){
             rigbod.velocity = new Vector2(rigbod.velocity.x * 0.95f, rigbod.velocity.y);
+        }
+    }
+
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.collider.tag == "Kill")
+        {
+            Destroy(this.gameObject);
+            Debug.Log("player died");
         }
     }
 
