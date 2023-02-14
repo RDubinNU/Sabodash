@@ -220,7 +220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 110f0804cd4b1ba49956ee3f6361cc3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scrollAmount: 0.1
+  scrollAmount: 0.2
 --- !u!1 &260806284
 GameObject:
   m_ObjectHideFlags: 0
@@ -250,7 +250,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98efc3d23a179b248b28803e5402cd36, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  section_1: {fileID: 1479287255451465507, guid: b9fc145c2c7b7de4b96137f837d0ada9, type: 3}
+  section_1: {fileID: 1479287255451465507, guid: f1f4d62ae6451c043b16e211e8b19f96, type: 3}
   Lobby: {fileID: 3584917241912154977, guid: 08f9404a0c08ee84f8e0feb0b1b2579d, type: 3}
   cam: {fileID: 56594202}
 --- !u!4 &260806286
