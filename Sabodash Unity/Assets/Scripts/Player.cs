@@ -82,7 +82,7 @@ public class Player : MonoBehaviour
             if (grounded & Time.time > last_jump + jump_cd)
             {
                 accel_y = jumpstrength;
-                rigbod.angularVelocity = 300f * Math.Sign(rigbod.velocity.x);
+                //rigbod.angularVelocity = 300f * Math.Sign(rigbod.velocity.x);
                 last_jump = Time.time;
             }
             else if ((Time.time > last_jump + fly_delay) && rigbod.velocity.y + fly_accel <= max_vel_y)
@@ -103,13 +103,10 @@ public class Player : MonoBehaviour
     }
 
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnBecameInvisible()
     {
-        if (collision.collider.tag == "Kill")
-        {
-            Destroy(this.gameObject);
-            Debug.Log("player died");
-        }
+        Destroy(this.gameObject);
+        Debug.Log("player died");
     }
 
 }
