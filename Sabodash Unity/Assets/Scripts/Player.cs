@@ -14,7 +14,7 @@ public class Player : MonoBehaviour
     float maxvel_x = 6f;
 
     float max_vel_y = 6f;
-    float fly_accel = 0.05f;
+    float fly_accel = 0.5f;
     float jumpstrength = 8f;
     float last_jump = 0f;
     float fly_delay = 0.25f;
@@ -48,19 +48,14 @@ public class Player : MonoBehaviour
 
     }
 
-    bool IsGrounded()
-    {
+    bool IsGrounded(){
         float tolerance = 0.05f;
-
         Vector3 raycast_origin = boxcollider.bounds.center + (Vector3)Vector2.down * boxcollider.bounds.extents.y;
         RaycastHit2D ground_raycast = Physics2D.Raycast(raycast_origin, Vector2.down, tolerance);
-
         bool on_ground = false;
-        if (ground_raycast.collider != null && rigbod.velocity.y <= 0.05)
-        {
+        if (ground_raycast.collider != null && rigbod.velocity.y <= 0.05) {
             on_ground = true;
         }
-
         return (on_ground);
     }
 

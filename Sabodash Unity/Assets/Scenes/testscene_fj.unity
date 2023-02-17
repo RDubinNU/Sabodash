@@ -220,7 +220,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 110f0804cd4b1ba49956ee3f6361cc3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scrollAmount: 0.1
+  scrollAmount: 0.2
 --- !u!1 &260806284
 GameObject:
   m_ObjectHideFlags: 0
@@ -238,6 +238,7 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+
 --- !u!4 &260806286
 Transform:
   m_ObjectHideFlags: 0
