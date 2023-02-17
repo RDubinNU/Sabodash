@@ -98,13 +98,10 @@ public class Player : MonoBehaviour
     }
 
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnBecameInvisible()
     {
-        if (collision.collider.tag == "Kill")
-        {
-            Destroy(this.gameObject);
-            Debug.Log("player died");
-        }
+        Destroy(this.gameObject);
+        Debug.Log("player died");
     }
 
 }
