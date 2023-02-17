@@ -10,14 +10,15 @@ public class Player : MonoBehaviour
     private InputAction lr;
     private InputAction jump;
     // Parameters
-    float horizontal_accel_speed = 0.05f;
+    float horizontal_accel_speed = 0.75f;
     float maxvel_x = 6f;
 
-    float max_vel_y = 6f;
-    float fly_accel = 0.5f;
+    float maxvel_y = 6f;
+    float fly_accel = 1.25f;
     float jumpstrength = 8f;
+
     float last_jump = 0f;
-    float fly_delay = 0.25f;
+    float fly_delay = 0.2f;
     float jump_cd = 0.1f;
 
     // Variables
@@ -35,7 +36,7 @@ public class Player : MonoBehaviour
         sprite = GetComponent<SpriteRenderer>();
         sprite.color = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
     }
-    void Update()
+    void FixedUpdate()
     {
         // Temp starting behaviour
         if (Input.GetKey("p"))
@@ -66,7 +67,7 @@ public class Player : MonoBehaviour
 
         if (Math.Abs(rigbod.velocity.x + accel_x) > maxvel_x)
         {
-            accel_x = 0;
+            accel_x = 0; // Clipping acceleration vs velocity allows fun side sliding on slanted surfaces
         }
 
         // Flying and jump control
@@ -80,7 +81,7 @@ public class Player : MonoBehaviour
                 //rigbod.angularVelocity = 300f * Math.Sign(rigbod.velocity.x);
                 last_jump = Time.time;
             }
-            else if ((Time.time > last_jump + fly_delay) && rigbod.velocity.y + fly_accel <= max_vel_y)
+            else if ((Time.time > last_jump + fly_delay))
             {
                 accel_y = fly_accel;
             }
@@ -89,6 +90,15 @@ public class Player : MonoBehaviour
         // Acceleration Application
         Vector2 acceleration = new Vector2(accel_x, accel_y);
         rigbod.velocity = rigbod.velocity + acceleration;
+
+
+        // Fly Capping
+
+        if (rigbod.velocity.y >= maxvel_y && (Time.time > last_jump + fly_delay))
+        {
+            rigbod.velocity = new Vector2(rigbod.velocity.x,
+                                            maxvel_y);
+        }
 
 
         // Frictional Slowing

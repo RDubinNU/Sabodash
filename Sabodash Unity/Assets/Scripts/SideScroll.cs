@@ -5,14 +5,14 @@ using UnityEngine;
 public class SideScroll : MonoBehaviour
 {
     // Start is called before the first frame update
-    public float scrollAmount;
+    private float scrollAmount = .05f;
     void Start()
     {
-        scrollAmount = 0.003f;
+
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
 
         if (GameState.gameStarted)
