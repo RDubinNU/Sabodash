@@ -1,7 +1,10 @@
 using System;
+using TMPro;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.U2D;
 
 public class Player : MonoBehaviour
 {
@@ -26,6 +29,9 @@ public class Player : MonoBehaviour
     public BoxCollider2D boxcollider;
     public SpriteRenderer sprite;
     private bool grounded;
+    public int bank = 0;
+    public GameObject textPrefab;
+    private GameObject mytext;
 
     void Start() {
         rigbod = GetComponent<Rigidbody2D>();
@@ -35,6 +41,8 @@ public class Player : MonoBehaviour
         jump = input.actions["Jump"];
         sprite = GetComponent<SpriteRenderer>();
         sprite.color = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+        mytext = Instantiate(textPrefab, transform.position, Quaternion.identity);
+        mytext.GetComponent<TextMeshPro>().text = "Hello";
     }
     void FixedUpdate()
     {
@@ -46,6 +54,9 @@ public class Player : MonoBehaviour
 
          grounded = IsGrounded();
          MoveAnywhere();
+
+        mytext.transform.position = new Vector2(transform.position.x, transform.position.y+0.5f);
+        mytext.GetComponent<TextMeshPro>().text = bank.ToString();
 
     }
 
@@ -112,6 +123,14 @@ public class Player : MonoBehaviour
     {
         Destroy(this.gameObject);
         Debug.Log("player died");
+    }
+
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        Destroy(col.gameObject);
+        bank++;
+        Debug.Log("bank updated:");
+        Debug.Log(bank);
     }
 
 }
