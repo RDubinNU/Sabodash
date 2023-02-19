@@ -58,20 +58,26 @@ public class Player : MonoBehaviour
         sab_txt = Instantiate(textPrefab, transform.position, Quaternion.identity);
         sab_txt.GetComponent<TextMeshPro>().text = sabNames[sabSelected];
     }
-    void FixedUpdate()
+
+    private void Update()
     {
-        // Temp starting behaviour
-        if (start.ReadValue<float>() > 0) GameState.gameStarted = true;
-
-        grounded = IsGrounded();
-        MoveAnywhere();
-
+        // Display Updates
         bank_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
         bank_txt.GetComponent<TextMeshPro>().text = bank.ToString();
         sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.75f);
         sab_txt.GetComponent<TextMeshPro>().text = sabNames[sabSelected];
 
         parseSabButtons();
+    }
+
+    void FixedUpdate()
+    {
+        // Physics updates
+        if (start.ReadValue<float>() > 0) GameState.gameStarted = true;
+
+        grounded = IsGrounded();
+        MoveAnywhere();
+
     }
     void parseSabButtons()
     {
