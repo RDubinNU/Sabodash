@@ -8,6 +8,11 @@ using UnityEngine.U2D;
 
 public class Player : MonoBehaviour
 {
+
+    // Public attributes
+    public int playerID;
+    public int colourIndex = -1;
+
     //Controls
     private PlayerInput input;
     private InputAction lr;
@@ -40,34 +45,42 @@ public class Player : MonoBehaviour
     private const int numSabotages = 5;
     private String[] sabNames = new String[numSabotages] { "a", "b", "c", "d", "e"};
     public int sabSelected = 0;
-    private bool sabButtonDown = false;
+    private bool triggerDown = false;
 
     void Start() {
+
+        // Physics Instantiation
         rigbod = GetComponent<Rigidbody2D>();
         boxcollider = GetComponent<BoxCollider2D>();
+
+        // Input Instantiation
         input = GetComponent<PlayerInput>();
         lr = input.actions["LR"];
         jump = input.actions["Jump"];
         start = input.actions["Start"];
         triggers = input.actions["Triggers"];
         sabotage = input.actions["Sabotage"];
+
+        // Sprite Instantiation
         sprite = GetComponent<SpriteRenderer>();
-        sprite.color = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+        updatePlayerColour(1);
+
+        // HUD Instantiation
         bank_txt = Instantiate(textPrefab, transform.position, Quaternion.identity);
         bank_txt.GetComponent<TextMeshPro>().text = "Hello";
         sab_txt = Instantiate(textPrefab, transform.position, Quaternion.identity);
         sab_txt.GetComponent<TextMeshPro>().text = sabNames[sabSelected];
+
+
+        // Add player to game state handling
+        GameState.AddPlayer(this);
+
     }
 
     private void Update()
     {
-        // Display Updates
-        bank_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
-        bank_txt.GetComponent<TextMeshPro>().text = bank.ToString();
-        sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.75f);
-        sab_txt.GetComponent<TextMeshPro>().text = sabNames[sabSelected];
-
-        parseSabButtons();
+        updateHUD();
+        parseTriggers();
     }
 
     void FixedUpdate()
@@ -79,24 +92,49 @@ public class Player : MonoBehaviour
         MoveAnywhere();
 
     }
-    void parseSabButtons()
+    void parseTriggers()
     {
-        if (triggers.ReadValue<float>() > 0 && !sabButtonDown){
-            sabSelected++;
-            sabButtonDown = true;
+        if (GameState.gameStarted)
+        {
+            // Sabotage Handling
+            if (triggers.ReadValue<float>() > 0 && !triggerDown){
+                sabSelected++;
+                triggerDown = true;
+            } else if (triggers.ReadValue<float>() < 0 && !triggerDown)
+            {
+                sabSelected--;
+                triggerDown = true;
+            } else if (triggers.ReadValue<float>() == 0)
+            {
+                triggerDown = false;
+            }
+            if (sabSelected > numSabotages - 1) sabSelected = 0;
+            if (sabSelected < 0) sabSelected = numSabotages - 1;
+        } else
+        {
+            // Colour Selection
+            if (triggers.ReadValue<float>() > 0 && !triggerDown)
+            {
+                triggerDown = true;
+                updatePlayerColour(1);
+            }
+            else if (triggers.ReadValue<float>() < 0 && !triggerDown)
+            {
+                triggerDown = true;
+                updatePlayerColour(-1);
+            }
+            else if (triggers.ReadValue<float>() == 0)
+            {
+                triggerDown = false;
+            }
         }
-        if(triggers.ReadValue<float>() < 0 && !sabButtonDown){
-            sabSelected--;
-            sabButtonDown = true;
-        }
-        if(triggers.ReadValue<float>() == 0){
-            sabButtonDown = false;
-        }
-        if (sabSelected > numSabotages-1) sabSelected = numSabotages-1;
-        if (sabSelected < 0) sabSelected = 0;
+        
     }
+
     bool IsGrounded(){
-        float tolerance = 0.05f;
+        // Grounding check for jumps
+
+        float tolerance = 0.025f;
         Vector3 raycast_origin = boxcollider.bounds.center + (Vector3)Vector2.down * boxcollider.bounds.extents.y;
         RaycastHit2D ground_raycast = Physics2D.Raycast(raycast_origin, Vector2.down, tolerance);
         bool on_ground = false;
@@ -153,6 +191,8 @@ public class Player : MonoBehaviour
     }
     private void OnBecameInvisible()
     {
+        GameState.RemovePlayer(this);
+
         Destroy(this.gameObject);
         Debug.Log("player died");
     }
@@ -160,7 +200,19 @@ public class Player : MonoBehaviour
     {
         Destroy(col.gameObject);
         bank++;
-        Debug.Log("bank updated:");
-        Debug.Log(bank);
+    }
+
+    void updateHUD() {
+        // Display Updates
+        bank_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
+        bank_txt.GetComponent<TextMeshPro>().text = bank.ToString();
+        sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.75f);
+        sab_txt.GetComponent<TextMeshPro>().text = sabNames[sabSelected];
+    }
+
+    void updatePlayerColour(int direction)
+    {
+        GameState.GetNextColour(this, direction);
+        sprite.color = GameState.possibleColours[colourIndex];
     }
 }

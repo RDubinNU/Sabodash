@@ -11,7 +11,6 @@ public class CoinSpawner : MonoBehaviour
     {
         var random = Random.Range(0, probability);
         if(random == 0) Instantiate(CoinPrefab, transform.position, Quaternion.identity);
-        Debug.Log(random);
         Destroy(gameObject);
     }
 
