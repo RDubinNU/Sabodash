@@ -41,11 +41,19 @@ public class Player : MonoBehaviour
     public GameObject textPrefab;
     private GameObject bank_txt;
     private GameObject sab_txt;
+    public Color color_copy;
 
     private const int numSabotages = 5;
     private String[] sabNames = new String[numSabotages] { "a", "b", "c", "d", "e"};
     public int sabSelected = 0;
     private bool triggerDown = false;
+
+    public float sabCooldown = 3;
+    public float sabDuration = 3;
+    public bool sabReady = true;
+
+    public bool sabApplied;
+    public float sabApplyTime;
 
     void Start() {
 
@@ -64,6 +72,7 @@ public class Player : MonoBehaviour
         // Sprite Instantiation
         sprite = GetComponent<SpriteRenderer>();
         updatePlayerColour(1);
+        color_copy = sprite.color;
 
         // HUD Instantiation
         bank_txt = Instantiate(textPrefab, transform.position, Quaternion.identity);
@@ -81,6 +90,23 @@ public class Player : MonoBehaviour
     {
         updateHUD();
         parseTriggers();
+        if (!sabReady)
+        {
+            //cooldownTime += Time.deltaTime;
+            if (Time.time - sabApplyTime >= sabCooldown)
+            {
+                sabReady = true;
+            }
+        }
+
+        if (sabApplied)
+        {
+            if(Time.time - sabApplyTime >= sabDuration)
+            {
+                sabApplied = false;
+                Sabotages.ResetPlayers();
+            }
+        }
     }
 
     void FixedUpdate()
@@ -90,6 +116,7 @@ public class Player : MonoBehaviour
 
         grounded = IsGrounded();
         MoveAnywhere();
+        UseSabotage();
 
     }
     void parseTriggers()
@@ -187,6 +214,16 @@ public class Player : MonoBehaviour
         // Frictional Slowing
         if(grounded && accel_x == 0){
             rigbod.velocity = new Vector2(rigbod.velocity.x * 0.95f, rigbod.velocity.y);
+        }
+    }
+    void UseSabotage()
+    {
+        if (sabotage.ReadValue<float>() > 0 && sabReady && bank > 0)
+        {
+            sabApplyTime = Time.time;
+            sabReady = false;
+            sabApplied = true;
+            Sabotages.ApplySabotage(sabSelected, this);
         }
     }
     private void OnBecameInvisible()
