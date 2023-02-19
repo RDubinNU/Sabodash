@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,49 +25,20 @@ public class GameState : MonoBehaviour
         cameraStartingPos = FindObjectOfType<Camera>().transform;
 
         // Add possible colours
-        possibleColours.Add(new Color(255, 255, 255));
-        possibleColours.Add(Color.HSVToRGB(0.00f, 1, 1));
-        possibleColours.Add(Color.HSVToRGB(0.10f, 1, 1));
-        possibleColours.Add(Color.HSVToRGB(0.15f, 1, 1));
-        possibleColours.Add(Color.HSVToRGB(0.25f, 1, 1));
-        possibleColours.Add(Color.HSVToRGB(0.35f, 1, 1));
-        possibleColours.Add(Color.HSVToRGB(0.50f, 1, 1));
-        possibleColours.Add(Color.HSVToRGB(0.55f, 1, 1));
-        possibleColours.Add(Color.HSVToRGB(0.60f, 1, 1));
-        possibleColours.Add(Color.HSVToRGB(0.65f, 1, 1));
-        possibleColours.Add(Color.HSVToRGB(0.73f, 1, 1));
-        possibleColours.Add(Color.HSVToRGB(0.75f, 1, 1));
-        possibleColours.Add(Color.HSVToRGB(0.80f, 1, 1));
-        possibleColours.Add(Color.HSVToRGB(0.90f, 1, 1));
 
-        possibleColours.Add(Color.HSVToRGB(0.00f, 0.5f, 1));
-        possibleColours.Add(Color.HSVToRGB(0.10f, 0.5f, 1));
-        possibleColours.Add(Color.HSVToRGB(0.15f, 0.5f, 1));
-        possibleColours.Add(Color.HSVToRGB(0.25f, 0.5f, 1));
-        possibleColours.Add(Color.HSVToRGB(0.35f, 0.5f, 1));
-        possibleColours.Add(Color.HSVToRGB(0.50f, 0.5f, 1));
-        possibleColours.Add(Color.HSVToRGB(0.55f, 0.5f, 1));
-        possibleColours.Add(Color.HSVToRGB(0.60f, 0.5f, 1));
-        possibleColours.Add(Color.HSVToRGB(0.65f, 0.5f, 1));
-        possibleColours.Add(Color.HSVToRGB(0.73f, 0.5f, 1));
-        possibleColours.Add(Color.HSVToRGB(0.75f, 0.5f, 1));
-        possibleColours.Add(Color.HSVToRGB(0.80f, 0.5f, 1));
-        possibleColours.Add(Color.HSVToRGB(0.90f, 0.5f, 1));
+        List<Tuple<float, float>> sv = new List<Tuple<float, float>>();
+        sv.Add(Tuple.Create(0.5f, 1f));
+        sv.Add(Tuple.Create(1f, 1f));
+        sv.Add(Tuple.Create(1f, 0.5f));
 
-        possibleColours.Add(Color.HSVToRGB(0.00f, 1, 0.5f));
-        possibleColours.Add(Color.HSVToRGB(0.10f, 1, 0.5f));
-        possibleColours.Add(Color.HSVToRGB(0.15f, 1, 0.5f));
-        possibleColours.Add(Color.HSVToRGB(0.25f, 1, 0.5f));
-        possibleColours.Add(Color.HSVToRGB(0.35f, 1, 0.5f));
-        possibleColours.Add(Color.HSVToRGB(0.50f, 1, 0.5f));
-        possibleColours.Add(Color.HSVToRGB(0.55f, 1, 0.5f));
-        possibleColours.Add(Color.HSVToRGB(0.60f, 1, 0.5f));
-        possibleColours.Add(Color.HSVToRGB(0.65f, 1, 0.5f));
-        possibleColours.Add(Color.HSVToRGB(0.73f, 1, 0.5f));
-        possibleColours.Add(Color.HSVToRGB(0.75f, 1, 0.5f));
-        possibleColours.Add(Color.HSVToRGB(0.80f, 1, 0.5f));
-        possibleColours.Add(Color.HSVToRGB(0.90f, 1, 0.5f));
-
+        foreach (Tuple<float, float> sv_pair in sv)
+        {
+            for (float i = 0; i < 1; i += 0.1f)
+            {
+                possibleColours.Add(Color.HSVToRGB(i, sv_pair.Item1, sv_pair.Item2));
+            }
+        }
+       
     }
 
     // Update is called once per frame
