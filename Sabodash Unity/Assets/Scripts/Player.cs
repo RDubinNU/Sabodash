@@ -1,7 +1,10 @@
 using System;
+using TMPro;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.U2D;
 
 public class Player : MonoBehaviour
 {
@@ -9,6 +12,9 @@ public class Player : MonoBehaviour
     private PlayerInput input;
     private InputAction lr;
     private InputAction jump;
+    private InputAction start;
+    private InputAction triggers;
+    private InputAction sabotage;
     // Parameters
     float horizontal_accel_speed = 0.75f;
     float maxvel_x = 6f;
@@ -26,6 +32,15 @@ public class Player : MonoBehaviour
     public BoxCollider2D boxcollider;
     public SpriteRenderer sprite;
     private bool grounded;
+    public int bank = 0;
+    public GameObject textPrefab;
+    private GameObject bank_txt;
+    private GameObject sab_txt;
+
+    private const int numSabotages = 5;
+    private String[] sabNames = new String[numSabotages] { "a", "b", "c", "d", "e"};
+    public int sabSelected = 0;
+    private bool sabButtonDown = false;
 
     void Start() {
         rigbod = GetComponent<Rigidbody2D>();
@@ -33,22 +48,53 @@ public class Player : MonoBehaviour
         input = GetComponent<PlayerInput>();
         lr = input.actions["LR"];
         jump = input.actions["Jump"];
+        start = input.actions["Start"];
+        triggers = input.actions["Triggers"];
+        sabotage = input.actions["Sabotage"];
         sprite = GetComponent<SpriteRenderer>();
         sprite.color = UnityEngine.Random.ColorHSV(0f, 1f, 1f, 1f, 0.5f, 1f);
+        bank_txt = Instantiate(textPrefab, transform.position, Quaternion.identity);
+        bank_txt.GetComponent<TextMeshPro>().text = "Hello";
+        sab_txt = Instantiate(textPrefab, transform.position, Quaternion.identity);
+        sab_txt.GetComponent<TextMeshPro>().text = sabNames[sabSelected];
     }
+
+    private void Update()
+    {
+        // Display Updates
+        bank_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
+        bank_txt.GetComponent<TextMeshPro>().text = bank.ToString();
+        sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.75f);
+        sab_txt.GetComponent<TextMeshPro>().text = sabNames[sabSelected];
+
+        parseSabButtons();
+    }
+
     void FixedUpdate()
     {
-        // Temp starting behaviour
-        if (Input.GetKey("p"))
-        {
-            GameState.gameStarted = true;
-        }
+        // Physics updates
+        if (start.ReadValue<float>() > 0) GameState.gameStarted = true;
 
-         grounded = IsGrounded();
-         MoveAnywhere();
+        grounded = IsGrounded();
+        MoveAnywhere();
 
     }
-
+    void parseSabButtons()
+    {
+        if (triggers.ReadValue<float>() > 0 && !sabButtonDown){
+            sabSelected++;
+            sabButtonDown = true;
+        }
+        if(triggers.ReadValue<float>() < 0 && !sabButtonDown){
+            sabSelected--;
+            sabButtonDown = true;
+        }
+        if(triggers.ReadValue<float>() == 0){
+            sabButtonDown = false;
+        }
+        if (sabSelected > numSabotages-1) sabSelected = numSabotages-1;
+        if (sabSelected < 0) sabSelected = 0;
+    }
     bool IsGrounded(){
         float tolerance = 0.05f;
         Vector3 raycast_origin = boxcollider.bounds.center + (Vector3)Vector2.down * boxcollider.bounds.extents.y;
@@ -59,7 +105,6 @@ public class Player : MonoBehaviour
         }
         return (on_ground);
     }
-
     void MoveAnywhere(){
         // Horizontal acceleration control
         float accel_x = lr.ReadValue<float>();
@@ -106,12 +151,16 @@ public class Player : MonoBehaviour
             rigbod.velocity = new Vector2(rigbod.velocity.x * 0.95f, rigbod.velocity.y);
         }
     }
-
-
     private void OnBecameInvisible()
     {
         Destroy(this.gameObject);
         Debug.Log("player died");
     }
-
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        Destroy(col.gameObject);
+        bank++;
+        Debug.Log("bank updated:");
+        Debug.Log(bank);
+    }
 }

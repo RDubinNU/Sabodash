@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
@@ -16,6 +17,7 @@ public class Generator : MonoBehaviour
 
     private const float GENERATION_DIST = 20f;
 
+    private List<Transform> renderedSections = new List<Transform>();
 
     private void Awake()
     {
@@ -43,13 +45,24 @@ public class Generator : MonoBehaviour
     {
         if (Vector3.Distance(cam.GetComponent<Transform>().position, latestSectionEndPos) < GENERATION_DIST)
         {
+            // Spawn new section
             SpawnLevelSection();
+
+            // Delete old sections
+            if (renderedSections.Count > 3)
+            {
+                Transform deleting = renderedSections[0];
+                renderedSections.RemoveAt(0);
+                Destroy(deleting.GameObject());
+            }
         }
     }
 
     private void SpawnLevelSection()
     {
         Transform latestSectionTransform = SpawnLevelSection(latestSectionEndPos);
+        renderedSections.Add(latestSectionTransform);
+
         latestSectionEndPos = latestSectionTransform.Find("SectionEnd").position;
     }
         
