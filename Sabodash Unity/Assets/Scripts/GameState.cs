@@ -24,10 +24,49 @@ public class GameState : MonoBehaviour
         cameraStartingPos = FindObjectOfType<Camera>().transform;
 
         // Add possible colours
-        possibleColours.Add(new Color(255, 0, 0));
-        possibleColours.Add(new Color(0, 255, 0));
-        possibleColours.Add(new Color(0, 0, 255));
         possibleColours.Add(new Color(255, 255, 255));
+        possibleColours.Add(Color.HSVToRGB(0.00f, 1, 1));
+        possibleColours.Add(Color.HSVToRGB(0.10f, 1, 1));
+        possibleColours.Add(Color.HSVToRGB(0.15f, 1, 1));
+        possibleColours.Add(Color.HSVToRGB(0.25f, 1, 1));
+        possibleColours.Add(Color.HSVToRGB(0.35f, 1, 1));
+        possibleColours.Add(Color.HSVToRGB(0.50f, 1, 1));
+        possibleColours.Add(Color.HSVToRGB(0.55f, 1, 1));
+        possibleColours.Add(Color.HSVToRGB(0.60f, 1, 1));
+        possibleColours.Add(Color.HSVToRGB(0.65f, 1, 1));
+        possibleColours.Add(Color.HSVToRGB(0.73f, 1, 1));
+        possibleColours.Add(Color.HSVToRGB(0.75f, 1, 1));
+        possibleColours.Add(Color.HSVToRGB(0.80f, 1, 1));
+        possibleColours.Add(Color.HSVToRGB(0.90f, 1, 1));
+
+        possibleColours.Add(Color.HSVToRGB(0.00f, 0.5f, 1));
+        possibleColours.Add(Color.HSVToRGB(0.10f, 0.5f, 1));
+        possibleColours.Add(Color.HSVToRGB(0.15f, 0.5f, 1));
+        possibleColours.Add(Color.HSVToRGB(0.25f, 0.5f, 1));
+        possibleColours.Add(Color.HSVToRGB(0.35f, 0.5f, 1));
+        possibleColours.Add(Color.HSVToRGB(0.50f, 0.5f, 1));
+        possibleColours.Add(Color.HSVToRGB(0.55f, 0.5f, 1));
+        possibleColours.Add(Color.HSVToRGB(0.60f, 0.5f, 1));
+        possibleColours.Add(Color.HSVToRGB(0.65f, 0.5f, 1));
+        possibleColours.Add(Color.HSVToRGB(0.73f, 0.5f, 1));
+        possibleColours.Add(Color.HSVToRGB(0.75f, 0.5f, 1));
+        possibleColours.Add(Color.HSVToRGB(0.80f, 0.5f, 1));
+        possibleColours.Add(Color.HSVToRGB(0.90f, 0.5f, 1));
+
+        possibleColours.Add(Color.HSVToRGB(0.00f, 1, 0.5f));
+        possibleColours.Add(Color.HSVToRGB(0.10f, 1, 0.5f));
+        possibleColours.Add(Color.HSVToRGB(0.15f, 1, 0.5f));
+        possibleColours.Add(Color.HSVToRGB(0.25f, 1, 0.5f));
+        possibleColours.Add(Color.HSVToRGB(0.35f, 1, 0.5f));
+        possibleColours.Add(Color.HSVToRGB(0.50f, 1, 0.5f));
+        possibleColours.Add(Color.HSVToRGB(0.55f, 1, 0.5f));
+        possibleColours.Add(Color.HSVToRGB(0.60f, 1, 0.5f));
+        possibleColours.Add(Color.HSVToRGB(0.65f, 1, 0.5f));
+        possibleColours.Add(Color.HSVToRGB(0.73f, 1, 0.5f));
+        possibleColours.Add(Color.HSVToRGB(0.75f, 1, 0.5f));
+        possibleColours.Add(Color.HSVToRGB(0.80f, 1, 0.5f));
+        possibleColours.Add(Color.HSVToRGB(0.90f, 1, 0.5f));
+
     }
 
     // Update is called once per frame
