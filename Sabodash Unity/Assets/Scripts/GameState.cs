@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -24,10 +25,20 @@ public class GameState : MonoBehaviour
         cameraStartingPos = FindObjectOfType<Camera>().transform;
 
         // Add possible colours
-        possibleColours.Add(new Color(255, 0, 0));
-        possibleColours.Add(new Color(0, 255, 0));
-        possibleColours.Add(new Color(0, 0, 255));
-        possibleColours.Add(new Color(255, 255, 255));
+
+        List<Tuple<float, float>> sv = new List<Tuple<float, float>>();
+        sv.Add(Tuple.Create(0.5f, 1f));
+        sv.Add(Tuple.Create(1f, 1f));
+        sv.Add(Tuple.Create(1f, 0.5f));
+
+        foreach (Tuple<float, float> sv_pair in sv)
+        {
+            for (float i = 0; i < 1; i += 0.1f)
+            {
+                possibleColours.Add(Color.HSVToRGB(i, sv_pair.Item1, sv_pair.Item2));
+            }
+        }
+       
     }
 
     // Update is called once per frame
