@@ -7,11 +7,12 @@ public class Sabotages : MonoBehaviour
 {
     // Start is called before the first frame update
     public static Player user;
-    public static List<Player> Players_copy;
+    public static List<Player> playersCopy;
+    public static int sabNumber;
 
     void Start()
     {
-        Players_copy = new List<Player>(GameState.players);
+        playersCopy = new List<Player>(GameState.players);
     }
 
     public static void ApplySabotage(int n, Player player)
@@ -23,6 +24,7 @@ public class Sabotages : MonoBehaviour
         if (n == 0 && player.bank >= 1)
         {
             player.bank -= 1;
+            sabNumber = player.sabSelected;
             foreach (Player Player in Players_list)
             {
                 Player.gameObject.transform.localScale += new Vector3(0.25f, 0.25f, 0f);
@@ -33,6 +35,7 @@ public class Sabotages : MonoBehaviour
         else if (n == 1 && player.bank >= 1)
         {
             player.bank -= 1;
+            sabNumber = player.sabSelected;
             foreach (Player Player in Players_list)
             {
                 Player.sprite.color = Color.gray;
@@ -44,6 +47,7 @@ public class Sabotages : MonoBehaviour
         else if (n == 2 && player.bank >= 1)
         {
             player.bank -= 1;
+            sabNumber = player.sabSelected;
             foreach (Player Player in Players_list)
             {
                 Player.rigbod.gravityScale *= -1;
@@ -54,11 +58,28 @@ public class Sabotages : MonoBehaviour
 
     public static void ResetPlayers()
     {
-        foreach (Player player in GameState.players)
+        // Reset only applied sabotage
+
+        if(sabNumber == 0)
         {
-            player.gameObject.transform.localScale = new Vector3(0.5f, 0.5f, 0f);
-            player.sprite.color = player.color_copy;
-            player.rigbod.gravityScale = 1;
+            foreach (Player player in GameState.players)
+            {
+                player.gameObject.transform.localScale = new Vector3(0.5f, 0.5f, 0f);
+            }
+        }
+        else if (sabNumber == 1)
+        {
+            foreach (Player player in GameState.players)
+            {
+                player.sprite.color = player.color_copy;
+            }
+        }
+        else if (sabNumber == 2)
+        {
+            foreach (Player player in GameState.players)
+            {
+                player.rigbod.gravityScale = 1;
+            }
         }
     }
 
