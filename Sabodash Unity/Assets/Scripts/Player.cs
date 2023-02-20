@@ -5,6 +5,9 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.U2D;
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 public class Player : MonoBehaviour
 {
@@ -13,13 +16,16 @@ public class Player : MonoBehaviour
     public int playerID;
     public int colourIndex = -1;
 
-    //Controls
+
+    // Controls
     private PlayerInput input;
     private InputAction lr;
     private InputAction jump;
     private InputAction start;
     private InputAction triggers;
     private InputAction sabotage;
+
+
     // Parameters
     float horizontal_accel_speed = 0.75f;
     float maxvel_x = 6f;
@@ -32,6 +38,7 @@ public class Player : MonoBehaviour
     float fly_delay = 0.2f;
     float jump_cd = 0.1f;
 
+
     // Variables
     public Rigidbody2D rigbod;
     public BoxCollider2D boxcollider;
@@ -41,19 +48,16 @@ public class Player : MonoBehaviour
     public GameObject textPrefab;
     private GameObject bank_txt;
     private GameObject sab_txt;
-    public Color color_copy;
 
     private const int numSabotages = 5;
-    private String[] sabNames = new String[numSabotages] { "a", "b", "c", "d", "e"};
-    public int sabSelected = 0;
+    private String[] sabNames = new String[numSabotages] {"Big", "Grey", "Grav", "d", "e"};
+    private int sabSelected = 0;
     private bool triggerDown = false;
 
-    public float sabCooldown = 3;
-    public float sabDuration = 3;
-    public bool sabReady = true;
+    private List<float> sabotageCooldowns = new List<float>();
+    private const int GENERAL_SABOTAGE_CD_DUR = 3;
+    private float playerGeneralSabCD = 0;
 
-    public bool sabApplied;
-    public float sabApplyTime;
 
     void Start() {
 
@@ -72,51 +76,42 @@ public class Player : MonoBehaviour
         // Sprite Instantiation
         sprite = GetComponent<SpriteRenderer>();
         updatePlayerColour(1);
-        color_copy = sprite.color;
 
         // HUD Instantiation
         bank_txt = Instantiate(textPrefab, transform.position, Quaternion.identity);
-        bank_txt.GetComponent<TextMeshPro>().text = "Hello";
+        bank_txt.GetComponent<TextMeshPro>().text = "";
         sab_txt = Instantiate(textPrefab, transform.position, Quaternion.identity);
-        sab_txt.GetComponent<TextMeshPro>().text = sabNames[sabSelected];
+        sab_txt.GetComponent<TextMeshPro>().text = "";
 
+        // Sabotage instantiation
+        for (int i = 0; i < Sabotages.sabotageCount; i++)
+        {
+            sabotageCooldowns.Add(0);
+        }
 
         // Add player to game state handling
         GameState.AddPlayer(this);
-
     }
 
     private void Update()
     {
         updateHUD();
         parseTriggers();
-        if (!sabReady)
-        {
-            if (Time.time - sabApplyTime >= sabCooldown)
-            {
-                sabReady = true;
-            }
-        }
-
-        if (sabApplied)
-        {
-            if(Time.time - sabApplyTime >= sabDuration)
-            {
-                sabApplied = false;
-                Sabotages.ResetPlayers();
-            }
-        }
     }
 
     void FixedUpdate()
     {
-        // Physics updates
+        
+        // Game start behaviour
         if (start.ReadValue<float>() > 0) GameState.gameStarted = true;
 
+        // Physics updates
         grounded = IsGrounded();
         MoveAnywhere();
-        UseSabotage();
 
+        // Sabotage usage
+        tickSabotageTimers();
+        CheckForSabotageUse();
     }
     void parseTriggers()
     {
@@ -215,16 +210,29 @@ public class Player : MonoBehaviour
             rigbod.velocity = new Vector2(rigbod.velocity.x * 0.95f, rigbod.velocity.y);
         }
     }
-    void UseSabotage()
+
+    void CheckForSabotageUse()
     {
-        if (sabotage.ReadValue<float>() > 0 && sabReady && bank > 0)
+        if (sabotage.ReadValue<float>() > 0)
         {
-            sabApplyTime = Time.time;
-            sabReady = false;
-            sabApplied = true;
-            Sabotages.ApplySabotage(sabSelected, this);
+            AttemptSabotageUse();
         }
     }
+
+    void AttemptSabotageUse()
+    {
+        if (sabotageCooldowns[sabSelected] == -1 && playerGeneralSabCD == 0)
+        {
+            bool applied = Sabotages.ApplySabotage(sabSelected, this);
+            
+            if (applied) {
+                // Update CDs
+                sabotageCooldowns[sabSelected] = Sabotages.sabotageCDs[sabSelected];
+                playerGeneralSabCD = GENERAL_SABOTAGE_CD_DUR;
+            }
+        }
+    }
+
     private void OnBecameInvisible()
     {
         GameState.RemovePlayer(this);
@@ -239,16 +247,42 @@ public class Player : MonoBehaviour
     }
 
     void updateHUD() {
-        // Display Updates
-        bank_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
-        bank_txt.GetComponent<TextMeshPro>().text = bank.ToString();
-        sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.75f);
-        sab_txt.GetComponent<TextMeshPro>().text = sabNames[sabSelected];
+
+        if (GameState.gameStarted)
+        {
+            // Display Updates
+            bank_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
+            bank_txt.GetComponent<TextMeshPro>().text = bank.ToString();
+            sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.75f);
+            sab_txt.GetComponent<TextMeshPro>().text = sabNames[sabSelected];
+        }
     }
 
     void updatePlayerColour(int direction)
     {
         GameState.GetNextColour(this, direction);
         sprite.color = GameState.possibleColours[colourIndex];
+    }
+
+    void tickSabotageTimers()
+    {
+        // Update Individual Timers
+        for (int i = 0; i < sabotageCooldowns.Count; i++) 
+        {
+            sabotageCooldowns[i] -= Time.fixedDeltaTime;
+            if (sabotageCooldowns[i] < 0 && sabotageCooldowns[i] > -1)
+            {
+                sabotageCooldowns[i] = -1;
+                Sabotages.ResetSabotage(i);
+            } else if (sabotageCooldowns[i] < -1)
+            {
+                sabotageCooldowns[i] = -1;
+            }
+        }
+
+        // Update general timer
+        playerGeneralSabCD -= Time.fixedDeltaTime;
+        if (playerGeneralSabCD < 0) playerGeneralSabCD = 0;
+
     }
 }
