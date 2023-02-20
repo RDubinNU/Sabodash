@@ -92,7 +92,6 @@ public class Player : MonoBehaviour
         parseTriggers();
         if (!sabReady)
         {
-            //cooldownTime += Time.deltaTime;
             if (Time.time - sabApplyTime >= sabCooldown)
             {
                 sabReady = true;

@@ -5,7 +5,7 @@ using UnityEngine;
 public class SideScroll : MonoBehaviour
 {
     // Start is called before the first frame update
-    private float scrollAmount = .05f;
+    private float scrollAmount = .0005f;
     void Start()
     {
 

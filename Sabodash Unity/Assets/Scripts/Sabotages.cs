@@ -6,26 +6,25 @@ using UnityEngine;
 public class Sabotages : MonoBehaviour
 {
     // Start is called before the first frame update
-    public static Player user;
-    public static List<Player> playersCopy;
+    
     public static int sabNumber;
 
     void Start()
     {
-        playersCopy = new List<Player>(GameState.players);
+        
     }
 
     public static void ApplySabotage(int n, Player player)
     {
-        List<Player> Players_list = new List<Player>(FindObjectsOfType<Player>());
-        Players_list.Remove(player);
+        List<Player> playersCopy = new List<Player>(GameState.players);
+        playersCopy.Remove(player);
 
         // Makes other players bigger
         if (n == 0 && player.bank >= 1)
         {
             player.bank -= 1;
             sabNumber = player.sabSelected;
-            foreach (Player Player in Players_list)
+            foreach (Player Player in playersCopy)
             {
                 Player.gameObject.transform.localScale += new Vector3(0.25f, 0.25f, 0f);
             }
@@ -36,7 +35,7 @@ public class Sabotages : MonoBehaviour
         {
             player.bank -= 1;
             sabNumber = player.sabSelected;
-            foreach (Player Player in Players_list)
+            foreach (Player Player in playersCopy)
             {
                 Player.sprite.color = Color.gray;
             }
@@ -48,7 +47,7 @@ public class Sabotages : MonoBehaviour
         {
             player.bank -= 1;
             sabNumber = player.sabSelected;
-            foreach (Player Player in Players_list)
+            foreach (Player Player in playersCopy)
             {
                 Player.rigbod.gravityScale *= -1;
             }
