@@ -205,7 +205,6 @@ public class Player : MonoBehaviour
                                             maxvel_y);
         } else if ((rigbod.velocity.y <= -maxvel_y) && rigbod.gravityScale < 0)
         {
-            Debug.Log("clipping");
             rigbod.velocity = new Vector2(rigbod.velocity.x,
                                             -maxvel_y);
         }
