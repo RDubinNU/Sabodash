@@ -128,7 +128,7 @@ public class Sabotages : MonoBehaviour
             {
                 if (p != player)
                 {
-                    p.sprite.color = GameState.possibleColours[player.colourIndex];
+                    p.sprite.color = GameState.possibleColours[p.colourIndex];
                 }
             }
         }
