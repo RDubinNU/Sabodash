@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Xml;
 
 public class GameState : MonoBehaviour
 {
@@ -13,16 +14,21 @@ public class GameState : MonoBehaviour
     public static List<Player> players = new List<Player>();
     private static int nextPlayerID = 0;
     public static List<Color> possibleColours = new List<Color>();
-    private static List<int> coloursInUse = new List<int>(); 
+    private static List<int> coloursInUse = new List<int>();
 
     // Camera
-    private Transform cameraStartingPos;
+    private Camera mainCamera;
+    private Vector3 cameraStartingPos;
+
+    private bool resetting = false;
+    private Vector3 cameraResetIncr;
 
     // Start is called before the first frame update
     void Start()
     {
 
-        cameraStartingPos = FindObjectOfType<Camera>().transform;
+        mainCamera = FindObjectOfType<Camera>();
+        cameraStartingPos = mainCamera.transform.position;
 
         // Add possible colours
 
@@ -42,12 +48,42 @@ public class GameState : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void LateUpdate()
     {
-        if ((CompareTag("LobbyOnly")) && gameStarted)
+
+        if (!resetting) {
+            if ((CompareTag("LobbyOnly")) && gameStarted)
+            {
+                Destroy(this.gameObject);
+            }
+
+            if (players.Count <= 1 && gameStarted)
+            {
+
+                // Credit winning player (foreach in case of 0)
+                foreach (Player p in players)
+                {
+                    p.playerWins += 1;
+                }
+
+                // Trigger resetting state
+                GameReset();
+                resetting = true;
+                cameraResetIncr = (mainCamera.transform.position - cameraStartingPos) / 100;
+            }
+        } else
         {
-            Destroy(this.gameObject);
+            CameraResetTick();
+            // Ticked reset with tolerance of one incr
+            if ((mainCamera.transform.position - cameraStartingPos).magnitude <= cameraResetIncr.magnitude)
+            {
+                mainCamera.transform.position = cameraStartingPos;
+                resetting = false;
+            }
         }
+
+        
+
     }
 
     static public void AddPlayer(Player player)
@@ -93,5 +129,15 @@ public class GameState : MonoBehaviour
         }
         coloursInUse.Add(nextIndex);
         player.colourIndex = nextIndex;
+    }
+
+    void GameReset()
+    {
+        gameStarted = false;
+    }
+
+    void CameraResetTick()
+    {
+        mainCamera.transform.position -= cameraResetIncr;
     }
 }

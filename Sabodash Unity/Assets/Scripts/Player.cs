@@ -15,6 +15,7 @@ public class Player : MonoBehaviour
     // Public attributes
     public int playerID;
     public int colourIndex = -1;
+    public int playerWins = 0;
 
 
     // Controls
@@ -241,15 +242,26 @@ public class Player : MonoBehaviour
 
     private void OnBecameInvisible()
     {
-        GameState.RemovePlayer(this);
-
-        Destroy(this.gameObject);
-        Debug.Log("player died");
+        clearPlayer();
     }
     void OnTriggerEnter2D(Collider2D col)
     {
         Destroy(col.gameObject);
         bank++;
+    }
+
+    void clearPlayer()
+    {
+        // Remove player from game state
+        GameState.RemovePlayer(this);
+
+        // Remove HUD
+        Destroy(bank_txt);
+        Destroy(sab_txt);
+    
+        // Destroy Player    
+        Destroy(this.gameObject);
+        Debug.Log("player died");
     }
 
     void updateHUD() {
