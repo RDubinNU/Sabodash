@@ -159,11 +159,11 @@ public class Player : MonoBehaviour
 
         float tolerance = 0.025f;
         Vector3 raycast_origin = boxcollider.bounds.center + (Vector3)Vector2.down * boxcollider.bounds.extents.y;
-        RaycastHit2D ground_raycast = Physics2D.Raycast(raycast_origin, Vector2.down, tolerance);
+        RaycastHit2D ground_raycast = Physics2D.Raycast(raycast_origin, Math.Sign(rigbod.gravityScale) * Vector2.down, tolerance);
         bool on_ground = false;
         if (ground_raycast.collider != null && rigbod.velocity.y <= 0.05) {
             on_ground = true;
-        }
+        } 
         return (on_ground);
     }
     void MoveAnywhere(){
@@ -184,7 +184,6 @@ public class Player : MonoBehaviour
             if (grounded & Time.time > last_jump + jump_cd)
             {
                 accel_y = jumpstrength * Math.Sign(rigbod.gravityScale);
-                //rigbod.angularVelocity = 300f * Math.Sign(rigbod.velocity.x);
                 last_jump = Time.time;
             }
             else if ((Time.time > last_jump + fly_delay))
@@ -200,12 +199,13 @@ public class Player : MonoBehaviour
 
         // Fly Capping
 
-        if (rigbod.velocity.y >= maxvel_y && (Time.time > last_jump + fly_delay) && rigbod.gravityScale > 0)
+        if (rigbod.velocity.y >= maxvel_y && rigbod.gravityScale > 0)
         {
             rigbod.velocity = new Vector2(rigbod.velocity.x,
                                             maxvel_y);
-        } else if (rigbod.velocity.y <= -maxvel_y && (Time.time > last_jump + fly_delay) && rigbod.gravityScale < 0)
+        } else if ((rigbod.velocity.y <= -maxvel_y) && rigbod.gravityScale < 0)
         {
+            Debug.Log("clipping");
             rigbod.velocity = new Vector2(rigbod.velocity.x,
                                             -maxvel_y);
         }
