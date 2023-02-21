@@ -8,16 +8,16 @@ using UnityEngine;
 public class Generator : MonoBehaviour
 {
 
-    [SerializeField] private Transform Lobby;
+    [SerializeField] public Transform Lobby;
     [SerializeField] private Camera cam;
 
     private List<Transform> sections = new List<Transform>();
 
-    private Vector3 latestSectionEndPos;
+    public Vector3 latestSectionEndPos;
 
     private const float GENERATION_DIST = 20f;
 
-    private List<Transform> renderedSections = new List<Transform>();
+    public List<Transform> renderedSections = new List<Transform>();
 
     private void Awake()
     {
@@ -58,7 +58,7 @@ public class Generator : MonoBehaviour
         }
     }
 
-    private void SpawnLevelSection()
+    public void SpawnLevelSection()
     {
         Transform latestSectionTransform = SpawnLevelSection(latestSectionEndPos);
         renderedSections.Add(latestSectionTransform);

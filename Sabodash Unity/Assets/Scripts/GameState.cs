@@ -3,6 +3,8 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
+using TMPro;
+using Unity.VisualScripting;
 
 public class GameState : MonoBehaviour
 {
@@ -11,7 +13,8 @@ public class GameState : MonoBehaviour
     public static bool gameStarted = false;
 
     // Player Tracking
-    public static List<Player> players = new List<Player>();
+    public static List<Player> alivePlayers = new List<Player>();
+    public static List<Player> deadPlayers = new List<Player>();
     private static int nextPlayerID = 0;
     public static List<Color> possibleColours = new List<Color>();
     private static List<int> coloursInUse = new List<int>();
@@ -22,6 +25,10 @@ public class GameState : MonoBehaviour
 
     private bool resetting = false;
     private Vector3 cameraResetIncr;
+    private const int cameraResetTime = 4;
+
+    // Generator
+    [SerializeField] private Generator generator;
 
     // Start is called before the first frame update
     void Start()
@@ -52,34 +59,14 @@ public class GameState : MonoBehaviour
     {
 
         if (!resetting) {
-            if ((CompareTag("LobbyOnly")) && gameStarted)
-            {
-                Destroy(this.gameObject);
-            }
 
-            if (players.Count <= 1 && gameStarted)
-            {
-
-                // Credit winning player (foreach in case of 0)
-                foreach (Player p in players)
-                {
-                    p.playerWins += 1;
-                }
-
-                // Trigger resetting state
-                GameReset();
-                resetting = true;
-                cameraResetIncr = (mainCamera.transform.position - cameraStartingPos) / 100;
-            }
+            checkForGameStart();
+            releasePlayers();
+            checkForReset();
+            
         } else
         {
-            CameraResetTick();
-            // Ticked reset with tolerance of one incr
-            if ((mainCamera.transform.position - cameraStartingPos).magnitude <= cameraResetIncr.magnitude)
-            {
-                mainCamera.transform.position = cameraStartingPos;
-                resetting = false;
-            }
+            checkResetDone();
         }
 
         
@@ -92,19 +79,22 @@ public class GameState : MonoBehaviour
         player.playerID = nextPlayerID;
         nextPlayerID++;
 
-        players.Add(player);
+        alivePlayers.Add(player);
 
     }
 
     static public void RemovePlayer(Player player)
     {
-        for (int i = 0; i < players.Count; i++)
+        for (int i = 0; i < alivePlayers.Count; i++)
         {
-            if (players[i] == player)
+            if (alivePlayers[i] == player)
             {
-                players.RemoveAt(i);
+                alivePlayers.RemoveAt(i);
             }
         }
+
+        deadPlayers.Add(player);
+        resetPlayerToLobby(player);
     }
 
     static public void GetNextColour(Player player, int direction)
@@ -131,13 +121,115 @@ public class GameState : MonoBehaviour
         player.colourIndex = nextIndex;
     }
 
-    void GameReset()
-    {
-        gameStarted = false;
-    }
 
     void CameraResetTick()
     {
         mainCamera.transform.position -= cameraResetIncr;
+    }
+
+    void checkForGameStart()
+    {
+        // Game Start Behaviour
+        bool readyToStart = true;
+        foreach (Player p in alivePlayers)
+        {
+            if (!p.ready)
+            {
+                readyToStart = false;
+            }
+        }
+
+        if (readyToStart == true && alivePlayers.Count > 1)
+        {
+            gameStarted = true;
+        }
+    }
+    
+
+    void releasePlayers()
+    {
+        // Release players
+        if ((CompareTag("LobbyOnly")) && gameStarted)
+        {
+            Destroy(this.gameObject);
+        }
+    }
+
+    void checkForReset()
+    {
+        if (alivePlayers.Count <= 1 && gameStarted)
+        {
+            prepForReset();
+        }
+    }
+
+    void prepForReset()
+    {
+
+        // Credit winning player (foreach in case of 0)
+        foreach (Player p in alivePlayers)
+        {
+            p.playerWins += 1;
+            resetPlayerToLobby(p);
+            p.transform.position = p.spawnPoint;
+        }
+
+        // Trigger resetting state
+        PlayerReset();
+        resetting = true;
+        cameraResetIncr = (mainCamera.transform.position - cameraStartingPos) / (50 * cameraResetTime);
+
+    }
+
+    void PlayerReset()
+    {
+        // Reset players
+        gameStarted = false;
+        foreach (Player p in deadPlayers)
+        {
+            alivePlayers.Add(p);
+        }
+
+        deadPlayers.Clear();
+
+    }
+    
+   
+
+    static void resetPlayerToLobby(Player player)
+    {
+        player.rigbod.position = player.spawnPoint;
+        player.ready = false;
+        player.bank = 0;
+    }
+
+    void ResetLevel()
+    {
+        // Reset level
+        foreach (Transform tf in generator.renderedSections)
+        {
+            Destroy(tf.GameObject());
+        }
+
+        generator.renderedSections.Clear();
+
+        // Update for new section
+        generator.latestSectionEndPos = generator.Lobby.Find("SectionEnd").position;
+        generator.SpawnLevelSection();
+    }
+
+    void checkResetDone()
+    {
+        // Do camera resetting
+        CameraResetTick();
+        // Ticked reset with tolerance of one incr
+        if ((mainCamera.transform.position - cameraStartingPos).magnitude <= cameraResetIncr.magnitude)
+        {
+            mainCamera.transform.position = cameraStartingPos;
+            resetting = false;
+
+            // After camera do level
+            ResetLevel();
+        }
     }
 }
