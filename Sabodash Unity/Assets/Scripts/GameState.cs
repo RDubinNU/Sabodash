@@ -1,7 +1,7 @@
 using System;
+using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 
 public class GameState : MonoBehaviour
 {
@@ -10,7 +10,7 @@ public class GameState : MonoBehaviour
     public static bool gameStarted = false;
 
     // Player Tracking
-    private static List<Player> players = new List<Player>();
+    public static List<Player> players = new List<Player>();
     private static int nextPlayerID = 0;
     public static List<Color> possibleColours = new List<Color>();
     private static List<int> coloursInUse = new List<int>(); 
