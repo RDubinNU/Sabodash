@@ -35,6 +35,7 @@ public class Sabotages : MonoBehaviour
 
     static int[] sabotageCosts = {embiggenCost, greyScaleCost, gravityCost};
     public static float[] sabotageCDs = {embiggenCD, greyscaleCD, gravityCD};
+    public static float[] sabotageDurs = { embiggenDuration, greyscaleDur, gravityDur};
     
 
     void Start()
@@ -107,29 +108,38 @@ public class Sabotages : MonoBehaviour
         }
     }
 
-    public static void ResetSabotage(int sabNumber)
+    public static void ResetSabotage(int sabNumber, Player player)
     {
         // Reset only applied sabotage
 
         if(sabNumber == 0)
         {
-            foreach (Player player in GameState.players)
+            foreach (Player p in GameState.players)
             {
-                player.gameObject.transform.localScale *= (1 / embiggenScale);
+                if (p != player)
+                {
+                    p.gameObject.transform.localScale *= (1 / embiggenScale);
+                }
             }
         }
         else if (sabNumber == 1)
         {
-            foreach (Player player in GameState.players)
+            foreach (Player p in GameState.players)
             {
-                player.sprite.color = GameState.possibleColours[player.colourIndex];
+                if (p != player)
+                {
+                    p.sprite.color = GameState.possibleColours[player.colourIndex];
+                }
             }
         }
         else if (sabNumber == 2)
         {
-            foreach (Player player in GameState.players)
+            foreach (Player p in GameState.players)
             {
-                player.rigbod.gravityScale = 1;
+                if (p != player)
+                {
+                    p.rigbod.gravityScale *= -1;
+                }
             }
         }
 

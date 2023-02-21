@@ -54,7 +54,8 @@ public class Player : MonoBehaviour
     private int sabSelected = 0;
     private bool triggerDown = false;
 
-    private List<float> sabotageCooldowns = new List<float>();
+    private List<float> playerSabotageCooldowns = new List<float>();
+    private List<float> playerSabotageDurs = new List<float>();
     private const int GENERAL_SABOTAGE_CD_DUR = 3;
     private float playerGeneralSabCD = 0;
 
@@ -86,7 +87,8 @@ public class Player : MonoBehaviour
         // Sabotage instantiation
         for (int i = 0; i < Sabotages.sabotageCount; i++)
         {
-            sabotageCooldowns.Add(0);
+            playerSabotageCooldowns.Add(0);
+            playerSabotageDurs.Add(-1);
         }
 
         // Add player to game state handling
@@ -181,13 +183,13 @@ public class Player : MonoBehaviour
         {
             if (grounded & Time.time > last_jump + jump_cd)
             {
-                accel_y = jumpstrength;
+                accel_y = jumpstrength * Math.Sign(rigbod.gravityScale);
                 //rigbod.angularVelocity = 300f * Math.Sign(rigbod.velocity.x);
                 last_jump = Time.time;
             }
             else if ((Time.time > last_jump + fly_delay))
             {
-                accel_y = fly_accel;
+                accel_y = fly_accel * Math.Sign(rigbod.gravityScale);
             }
         }
 
@@ -198,10 +200,14 @@ public class Player : MonoBehaviour
 
         // Fly Capping
 
-        if (rigbod.velocity.y >= maxvel_y && (Time.time > last_jump + fly_delay))
+        if (rigbod.velocity.y >= maxvel_y && (Time.time > last_jump + fly_delay) && rigbod.gravityScale > 0)
         {
             rigbod.velocity = new Vector2(rigbod.velocity.x,
                                             maxvel_y);
+        } else if (rigbod.velocity.y <= -maxvel_y && (Time.time > last_jump + fly_delay) && rigbod.gravityScale < 0)
+        {
+            rigbod.velocity = new Vector2(rigbod.velocity.x,
+                                            -maxvel_y);
         }
 
 
@@ -221,13 +227,14 @@ public class Player : MonoBehaviour
 
     void AttemptSabotageUse()
     {
-        if (sabotageCooldowns[sabSelected] == -1 && playerGeneralSabCD == 0)
+        if (playerSabotageCooldowns[sabSelected] == 0 && playerGeneralSabCD == 0)
         {
             bool applied = Sabotages.ApplySabotage(sabSelected, this);
             
             if (applied) {
                 // Update CDs
-                sabotageCooldowns[sabSelected] = Sabotages.sabotageCDs[sabSelected];
+                playerSabotageCooldowns[sabSelected] = Sabotages.sabotageCDs[sabSelected];
+                playerSabotageDurs[sabSelected] = Sabotages.sabotageDurs[sabSelected];
                 playerGeneralSabCD = GENERAL_SABOTAGE_CD_DUR;
             }
         }
@@ -266,23 +273,39 @@ public class Player : MonoBehaviour
 
     void tickSabotageTimers()
     {
+
+        // Update CDs
+
         // Update Individual Timers
-        for (int i = 0; i < sabotageCooldowns.Count; i++) 
+        for (int i = 0; i < playerSabotageDurs.Count; i++) 
         {
-            sabotageCooldowns[i] -= Time.fixedDeltaTime;
-            if (sabotageCooldowns[i] < 0 && sabotageCooldowns[i] > -1)
+            // Tick timers
+            playerSabotageCooldowns[i] -= Time.fixedDeltaTime;
+            playerSabotageDurs[i] -= Time.fixedDeltaTime;
+
+            // Update Cooldowns
+            if (playerSabotageCooldowns[i] < 0)
             {
-                sabotageCooldowns[i] = -1;
-                Sabotages.ResetSabotage(i);
-            } else if (sabotageCooldowns[i] < -1)
+                playerSabotageCooldowns[i] = 0;
+            }
+
+            // Update durations and reset
+            if (playerSabotageDurs[i] < 0 && playerSabotageDurs[i] > -1)
+            { 
+                Sabotages.ResetSabotage(i, this);
+                playerSabotageDurs[i] = -1;
+            } else if (playerSabotageDurs[i] < -1)
             {
-                sabotageCooldowns[i] = -1;
+                playerSabotageDurs[i] = -1;
             }
         }
 
         // Update general timer
         playerGeneralSabCD -= Time.fixedDeltaTime;
         if (playerGeneralSabCD < 0) playerGeneralSabCD = 0;
+
+
+        // Update Durations
 
     }
 }
