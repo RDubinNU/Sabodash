@@ -39,6 +39,12 @@ public class Player : MonoBehaviour
     float fly_delay = 0.2f;
     float jump_cd = 0.1f;
 
+    //Variables for Bouncy Sabotage (4)
+    public PhysicsMaterial2D mat_normal;
+    public PhysicsMaterial2D mat_bouncy;
+
+    //Variables for Pullback Sabotage (5)
+    public float sab_vel_percent = 1;
 
     // Variables
     public Rigidbody2D rigbod;
@@ -50,8 +56,8 @@ public class Player : MonoBehaviour
     private GameObject bank_txt;
     private GameObject sab_txt;
 
-    private const int numSabotages = 5;
-    private String[] sabNames = new String[numSabotages] {"Big", "Grey", "Grav", "Ctrl", "e"};
+    private const int numSabotages = 6;
+    private String[] sabNames = new String[numSabotages] {"Big", "Grey", "Grav", "Ctrl", "Bncy", "Slow"};
     private int sabSelected = 0;
     private bool triggerDown = false;
 
@@ -174,7 +180,7 @@ public class Player : MonoBehaviour
         float accel_x = lr.ReadValue<float>();
         accel_x = accel_x * horizontal_accel_speed * directionScale;
 
-        if (Math.Abs(rigbod.velocity.x + accel_x) > maxvel_x)
+        if (Math.Abs(rigbod.velocity.x + accel_x) > maxvel_x * sab_vel_percent)
         {
             accel_x = 0; // Clipping acceleration vs velocity allows fun side sliding on slanted surfaces
         }
@@ -235,8 +241,8 @@ public class Player : MonoBehaviour
             
             if (applied) {
                 // Update CDs
-                playerSabotageCooldowns[sabSelected] = Sabotages.sabotageCDs[sabSelected];
-                playerSabotageDurs[sabSelected] = Sabotages.sabotageDurs[sabSelected];
+                playerSabotageCooldowns[sabSelected] = Sabotages.sabVars[sabSelected].cost;
+                playerSabotageDurs[sabSelected] = Sabotages.sabVars[sabSelected].dur;
                 playerGeneralSabCD = GENERAL_SABOTAGE_CD_DUR;
             }
         }

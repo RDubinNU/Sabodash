@@ -4,117 +4,93 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Sabotages : MonoBehaviour
-{
+public class Sabotages : MonoBehaviour {
     // Start is called before the first frame update
+
+    public struct Sabotage {
+        public String name;
+        public int dur;
+        public int cost;
+        public int CD;
+        public bool overlappable;
+
+        public Sabotage(String newname, int duration, int mycost, int mycd, bool overlap) {
+            name = newname;
+            dur = duration;
+            cost = mycost;
+            CD = mycd;
+            overlappable = overlap;
+        }
+    }
 
     // Sabotage costs and durations
 
-    public static int sabotageCount = 4;
+    public const int sabotageCount = 6;
 
     // Sabotage overlapping control
-    private static bool[] overlappingAllowed = new bool[sabotageCount];
     private static bool[] sabotageInUse = new bool[sabotageCount];
 
-    // Embiggening (0)
     private static float embiggenScale = 1.5f;
-    private static float embiggenDuration = 5;
-    private static int embiggenCost = 1;
-    private static float embiggenCD = 5;
+    public static String[] namesList = new String[sabotageCount];
 
-    // Greyscale (1)
-    private static float greyscaleDur = 5;
-    private static int greyScaleCost = 1;
-    private static float greyscaleCD = 5;
+    //Sabotage(name, duration, cost, cd, overlappable)
+    public static Sabotage[] sabVars =  new Sabotage[sabotageCount]{
+        new Sabotage("Big ", 5, 1, 5, false),
+        new Sabotage("Grey", 5, 1, 5, false),
+        new Sabotage("Grav", 5, 1, 5, false),
+        new Sabotage("Ctrl", 5, 1, 5, false),
+        new Sabotage("Bncy", 5, 1, 5, false),
+        new Sabotage("Slow", 5, 1, 5, false)
+    };
 
-    // Gravity (2)
-    private static float gravityDur = 5f;
-    private static int gravityCost = 1;
-    private static float gravityCD = 5;
-
-    // Controls (2)
-    private static float controlsDur = 5f;
-    private static int controlsCost = 1;
-    private static float controlsCD = 5;
-
-
-    static int[] sabotageCosts = {embiggenCost, greyScaleCost, gravityCost, controlsCost};
-    public static float[] sabotageCDs = {embiggenCD, greyscaleCD, gravityCD, controlsCD};
-    public static float[] sabotageDurs = { embiggenDuration, greyscaleDur, gravityDur, controlsDur};
-    
-
-    void Start()
-    {
-        // Set overlapping behaviour
-        overlappingAllowed[0] = false;
-        overlappingAllowed[1] = false;
-        overlappingAllowed[2] = false;
-        overlappingAllowed[3] = false;
-
+    void Start() {
+        for (int i = 0; i < sabotageCount; i++) {
+            namesList[i] = sabVars[i].name;
+        }
     }
 
-    public static bool ApplySabotage(int sabTriggered, Player callingPlayer)
-    {
-
+    public static bool ApplySabotage(int sabTriggered, Player callingPlayer) {
         
+        if (callingPlayer.bank >= sabVars[sabTriggered].cost && (sabVars[sabTriggered].overlappable || !sabotageInUse[sabTriggered])) {
 
-        if (callingPlayer.bank >= sabotageCosts[sabTriggered] && (overlappingAllowed[sabTriggered] || !sabotageInUse[sabTriggered]))
-        {
+            callingPlayer.bank -= sabVars[sabTriggered].cost;
+
             // Makes other players bigger 
-            if (sabTriggered == 0)
-            {
-                callingPlayer.bank -= embiggenCost;
-                foreach (Player p in GameState.players)
-                {
-                    if (p != callingPlayer)
-                    {
-                        p.gameObject.transform.localScale *= embiggenScale;
-                    }
+            if (sabTriggered == 0) {
+                foreach (Player p in GameState.players) {
+                    if (p != callingPlayer) p.gameObject.transform.localScale *= embiggenScale;
                 }
-
             }
-
             // Makes other players gray
-            else if (sabTriggered == 1)
-            {
-                callingPlayer.bank -= greyScaleCost;
-                foreach (Player p in GameState.players)
-                {
+            else if (sabTriggered == 1) {
+                foreach (Player p in GameState.players) {
                     if (p != callingPlayer)
                         p.sprite.color = Color.gray;
                 }
-                sabotageInUse[sabTriggered] = true;
-                return true;
             }
-
             // Reverse gravity
-            else if (sabTriggered == 2)
-            {
-                callingPlayer.bank -= gravityCost;
-                foreach (Player p in GameState.players)
-                {
-                    if (p != callingPlayer)
-                    {
-                        p.rigbod.gravityScale *= -1;
-                    }
+            else if (sabTriggered == 2) {
+                foreach (Player p in GameState.players) {
+                    if (p != callingPlayer) p.rigbod.gravityScale *= -1;
                 }
-                sabotageInUse[sabTriggered] = true;
-                return true;
             }
-
             // Reverse controls
-            else if (sabTriggered == 3)
-            {
-                callingPlayer.bank -= controlsCost;
-                foreach (Player p in GameState.players)
-                {
-                    if (p != callingPlayer)
-                    {
-                        p.directionScale *= -1;
-                    }
+            else if (sabTriggered == 3) {
+                foreach (Player p in GameState.players) {
+                    if (p != callingPlayer) p.directionScale *= -1;
                 }
-                sabotageInUse[sabTriggered] = true;
-                return true;
+            }
+            // Bouncy
+            else if (sabTriggered == 4) {
+                foreach (Player p in GameState.players) {
+                    if (p != callingPlayer) p.boxcollider.sharedMaterial = p.mat_bouncy;
+                }
+            }
+            // Slowdown
+            else if (sabTriggered == 5) {
+                foreach (Player p in GameState.players) {
+                    if (p != callingPlayer) p.sab_vel_percent = 0.5f;
+                }
             }
 
             // Sabotage succesfully used
@@ -122,55 +98,46 @@ public class Sabotages : MonoBehaviour
             return true;
 
 
-        } else
-        {
+        }
+        else {
             // Sabotage failed to use
             return false;
         }
     }
 
-    public static void ResetSabotage(int sabNumber, Player player)
-    {
+    public static void ResetSabotage(int sabNumber, Player player) {
         // Reset only applied sabotage
 
-        if(sabNumber == 0)
-        {
-            foreach (Player p in GameState.players)
-            {
-                if (p != player)
-                {
-                    p.gameObject.transform.localScale *= (1 / embiggenScale);
-                }
+        if (sabNumber == 0) {
+            foreach (Player p in GameState.players) {
+                if (p != player)  p.gameObject.transform.localScale *= (1 / embiggenScale);
             }
         }
-        else if (sabNumber == 1)
-        {
-            foreach (Player p in GameState.players)
-            {
-                if (p != player)
-                {
-                    p.sprite.color = GameState.possibleColours[p.colourIndex];
-                }
+        else if (sabNumber == 1) {
+            foreach (Player p in GameState.players) {
+                if (p != player)  p.sprite.color = GameState.possibleColours[p.colourIndex];
             }
         }
-        else if (sabNumber == 2)
-        {
-            foreach (Player p in GameState.players)
-            {
-                if (p != player)
-                {
-                    p.rigbod.gravityScale *= -1;
-                }
+        else if (sabNumber == 2) {
+            foreach (Player p in GameState.players) {
+                if (p != player) p.rigbod.gravityScale *= -1; 
             }
         }
-        else if (sabNumber == 3)
-        {
-            foreach (Player p in GameState.players)
-            {
-                if (p != player)
-                {
-                    p.directionScale *= -1;
-                }
+        else if (sabNumber == 3) {
+            foreach (Player p in GameState.players) {
+                if (p != player)  p.directionScale *= -1; 
+            }
+        }
+
+        else if (sabNumber == 4) {
+            foreach (Player p in GameState.players) {
+                if (p != player) p.boxcollider.sharedMaterial = p.mat_normal; 
+            }
+        }
+
+        else if (sabNumber == 5) {
+            foreach (Player p in GameState.players) {
+                if (p != player) p.sab_vel_percent = 1f; 
             }
         }
 
@@ -179,8 +146,7 @@ public class Sabotages : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        
+    void Update() {
+
     }
 }
