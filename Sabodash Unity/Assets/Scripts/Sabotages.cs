@@ -25,7 +25,7 @@ public class Sabotages : MonoBehaviour {
 
     // Sabotage costs and durations
 
-    public const int sabotageCount = 6;
+    public const int sabotageCount = 7;
 
     // Sabotage overlapping control
     private static bool[] sabotageInUse = new bool[sabotageCount];
@@ -40,7 +40,8 @@ public class Sabotages : MonoBehaviour {
         new Sabotage("Grav", 5, 1, 5, false),
         new Sabotage("Ctrl", 5, 1, 5, false),
         new Sabotage("Bncy", 5, 1, 5, false),
-        new Sabotage("Slow", 5, 1, 5, false)
+        new Sabotage("Slow", 5, 1, 5, false),
+        new Sabotage("Stop", 3, 1, 5, false),
     };
 
     void Start() {
@@ -92,6 +93,12 @@ public class Sabotages : MonoBehaviour {
                     if (p != callingPlayer) p.sab_vel_percent = 0.5f;
                 }
             }
+            // Stop
+            else if (sabTriggered == 6) {
+                foreach (Player p in GameState.players) {
+                    if (p != callingPlayer) p.sab_vel_percent = 0f;
+                }
+            }
 
             // Sabotage succesfully used
             sabotageInUse[sabTriggered] = true;
@@ -137,7 +144,12 @@ public class Sabotages : MonoBehaviour {
 
         else if (sabNumber == 5) {
             foreach (Player p in GameState.players) {
-                if (p != player) p.sab_vel_percent = 1f; 
+                if (p != player) p.sab_vel_percent = 1f;
+            }
+        }
+        else if (sabNumber == 6) {
+            foreach (Player p in GameState.players) {
+                if (p != player) p.sab_vel_percent = 1f;
             }
         }
 
