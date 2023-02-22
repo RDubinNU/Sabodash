@@ -51,7 +51,7 @@ public class Player : MonoBehaviour
     private GameObject sab_txt;
 
     private const int numSabotages = 5;
-    private String[] sabNames = new String[numSabotages] {"Big", "Grey", "Grav", "d", "e"};
+    private String[] sabNames = new String[numSabotages] {"Big", "Grey", "Grav", "Ctrl", "e"};
     private int sabSelected = 0;
     private bool triggerDown = false;
 
@@ -59,6 +59,8 @@ public class Player : MonoBehaviour
     private List<float> playerSabotageDurs = new List<float>();
     private const int GENERAL_SABOTAGE_CD_DUR = 3;
     private float playerGeneralSabCD = 0;
+
+    public int directionScale = 1;
 
 
     void Start() {
@@ -170,7 +172,7 @@ public class Player : MonoBehaviour
     void MoveAnywhere(){
         // Horizontal acceleration control
         float accel_x = lr.ReadValue<float>();
-        accel_x = accel_x * horizontal_accel_speed;
+        accel_x = accel_x * horizontal_accel_speed * directionScale;
 
         if (Math.Abs(rigbod.velocity.x + accel_x) > maxvel_x)
         {

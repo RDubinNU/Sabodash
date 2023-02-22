@@ -10,7 +10,7 @@ public class Sabotages : MonoBehaviour
 
     // Sabotage costs and durations
 
-    public static int sabotageCount = 3;
+    public static int sabotageCount = 4;
 
     // Sabotage overlapping control
     private static bool[] overlappingAllowed = new bool[sabotageCount];
@@ -32,10 +32,15 @@ public class Sabotages : MonoBehaviour
     private static int gravityCost = 1;
     private static float gravityCD = 5;
 
+    // Controls (2)
+    private static float controlsDur = 5f;
+    private static int controlsCost = 1;
+    private static float controlsCD = 5;
 
-    static int[] sabotageCosts = {embiggenCost, greyScaleCost, gravityCost};
-    public static float[] sabotageCDs = {embiggenCD, greyscaleCD, gravityCD};
-    public static float[] sabotageDurs = { embiggenDuration, greyscaleDur, gravityDur};
+
+    static int[] sabotageCosts = {embiggenCost, greyScaleCost, gravityCost, controlsCost};
+    public static float[] sabotageCDs = {embiggenCD, greyscaleCD, gravityCD, controlsCD};
+    public static float[] sabotageDurs = { embiggenDuration, greyscaleDur, gravityDur, controlsDur};
     
 
     void Start()
@@ -44,6 +49,7 @@ public class Sabotages : MonoBehaviour
         overlappingAllowed[0] = false;
         overlappingAllowed[1] = false;
         overlappingAllowed[2] = false;
+        overlappingAllowed[3] = false;
 
     }
 
@@ -96,6 +102,21 @@ public class Sabotages : MonoBehaviour
                 return true;
             }
 
+            // Reverse controls
+            else if (sabTriggered == 3)
+            {
+                callingPlayer.bank -= controlsCost;
+                foreach (Player p in GameState.players)
+                {
+                    if (p != callingPlayer)
+                    {
+                        p.directionScale *= -1;
+                    }
+                }
+                sabotageInUse[sabTriggered] = true;
+                return true;
+            }
+
             // Sabotage succesfully used
             sabotageInUse[sabTriggered] = true;
             return true;
@@ -139,6 +160,16 @@ public class Sabotages : MonoBehaviour
                 if (p != player)
                 {
                     p.rigbod.gravityScale *= -1;
+                }
+            }
+        }
+        else if (sabNumber == 3)
+        {
+            foreach (Player p in GameState.players)
+            {
+                if (p != player)
+                {
+                    p.directionScale *= -1;
                 }
             }
         }
