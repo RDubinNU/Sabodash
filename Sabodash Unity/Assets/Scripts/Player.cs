@@ -56,8 +56,9 @@ public class Player : MonoBehaviour
     private GameObject bank_txt;
     private GameObject sab_txt;
 
-    private const int numSabotages = 7;
-    private String[] sabNames = new String[numSabotages] {"Big", "Grey", "Grav", "Ctrl", "Bncy", "Slow", "Stop"};
+    private const int numSabotages = 8;
+    private String[] sabNames = new String[numSabotages] {"Big", "Grey", "Grav", "Ctrl", 
+                                                            "Bncy", "Slow", "Stop", "Frwd"};
     private int sabSelected = 0;
     private bool triggerDown = false;
 
