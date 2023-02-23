@@ -275,7 +275,10 @@ public class Player : MonoBehaviour
 
     private void OnBecameInvisible()
     {
-        GameState.RemovePlayer(this);
+        if (GameState.gameStarted)
+        {
+            GameState.RemovePlayer(this);
+        }
     }
     void OnTriggerEnter2D(Collider2D col)
     {

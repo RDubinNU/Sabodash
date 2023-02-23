@@ -23,10 +23,6 @@ public class GameState : MonoBehaviour
     private Camera mainCamera;
     private Vector3 cameraStartingPos;
 
-    private bool resetting = false;
-    private Vector3 cameraResetIncr;
-    private const int cameraResetTime = 4;
-
     // Generator
     [SerializeField] private Generator generator;
 
@@ -58,14 +54,12 @@ public class GameState : MonoBehaviour
     void LateUpdate()
     {
 
-        if (!resetting) {
-
-            checkForGameStart();
+        if (gameStarted)
+        {
             checkForReset();
-            
         } else
         {
-            checkResetDone();
+            checkForGameStart();
         }
 
         
@@ -120,12 +114,6 @@ public class GameState : MonoBehaviour
         player.colourIndex = nextIndex;
     }
 
-
-    void CameraResetTick()
-    {
-        mainCamera.transform.position -= cameraResetIncr;
-    }
-
     void checkForGameStart()
     {
         // Game Start Behaviour
@@ -149,38 +137,47 @@ public class GameState : MonoBehaviour
     {
         if (alivePlayers.Count <= 1 && gameStarted)
         {
-            prepForReset();
+            Reset();
         }
     }
 
-    void prepForReset()
+    private void Reset()
+    {
+        gameStarted = false;
+        creditWinningPlayer();
+        ResetCamera();
+        ResetLevel();
+        ResetPlayers();
+    }
+
+    void creditWinningPlayer()
     {
 
         // Credit winning player (foreach in case of 0)
         foreach (Player p in alivePlayers)
         {
             p.playerWins += 1;
-            resetPlayerToLobby(p);
-            p.transform.position = p.spawnPoint;
+            deadPlayers.Add(p);
         }
-
-        // Trigger resetting state
-        resetting = true;
-        cameraResetIncr = (mainCamera.transform.position - cameraStartingPos) / (50 * cameraResetTime);
-
+        alivePlayers.Clear();
     }
 
-    void PlayerReset()
+
+    void ResetPlayers()
     {
         // Reset players
         gameStarted = false;
         foreach (Player p in deadPlayers)
         {
+            p.ready = false;
+            p.bank = 0;
+            resetPlayerToLobby(p);
             alivePlayers.Add(p);
+
+            // TODO Reset Active Sabotages
         }
 
         deadPlayers.Clear();
-
     }
     
    
@@ -188,8 +185,6 @@ public class GameState : MonoBehaviour
     static void resetPlayerToLobby(Player player)
     {
         player.rigbod.position = player.spawnPoint;
-        player.ready = false;
-        player.bank = 0;
     }
 
     void ResetLevel()
@@ -207,19 +202,8 @@ public class GameState : MonoBehaviour
         generator.SpawnLevelSection();
     }
 
-    void checkResetDone()
+    void ResetCamera()
     {
-        // Do camera resetting
-        CameraResetTick();
-        // Ticked reset with tolerance of one incr
-        if ((mainCamera.transform.position - cameraStartingPos).magnitude <= cameraResetIncr.magnitude)
-        {
-            mainCamera.transform.position = cameraStartingPos;
-            resetting = false;
-
-            // After camera do level
-            PlayerReset();
-            ResetLevel();
-        }
+        mainCamera.transform.position = cameraStartingPos;
     }
 }
