@@ -43,6 +43,13 @@ public class Player : MonoBehaviour
     float jump_cd = 0.1f;
 
 
+    //Variables for Bouncy Sabotage (4)
+    public PhysicsMaterial2D mat_normal;
+    public PhysicsMaterial2D mat_bouncy;
+    //Variables for Pullback Sabotage (5)
+    public float sab_vel_percent = 1;
+
+
     // Variables
     public Rigidbody2D rigbod;
     public BoxCollider2D boxcollider;
@@ -55,8 +62,10 @@ public class Player : MonoBehaviour
 
     public Vector3 spawnPoint = new Vector3(0, 0, 0);
 
-    private const int numSabotages = 5;
-    private String[] sabNames = new String[numSabotages] {"Big", "Grey", "Grav", "d", "e"};
+    private const int numSabotages = 8;
+    private String[] sabNames = new String[numSabotages] {"Big", "Grey", "Grav", "Ctrl",
+                                                            "Bncy", "Slow", "Stop", "Frwd"};
+
     private int sabSelected = 0;
     private bool triggerDown = false;
 
@@ -65,6 +74,7 @@ public class Player : MonoBehaviour
     private const int GENERAL_SABOTAGE_CD_DUR = 3;
     private float playerGeneralSabCD = 0;
 
+    public int directionScale = 1;
 
     void Start() {
 
@@ -193,9 +203,9 @@ public class Player : MonoBehaviour
     void MoveAnywhere(){
         // Horizontal acceleration control
         float accel_x = lr.ReadValue<float>();
-        accel_x = accel_x * horizontal_accel_speed;
 
-        if (Math.Abs(rigbod.velocity.x + accel_x) > maxvel_x)
+        accel_x = accel_x * horizontal_accel_speed * directionScale;
+        if (Math.Abs(rigbod.velocity.x + accel_x) > maxvel_x * sab_vel_percent)
         {
             accel_x = 0; // Clipping acceleration vs velocity allows fun side sliding on slanted surfaces
         }
@@ -256,8 +266,8 @@ public class Player : MonoBehaviour
             
             if (applied) {
                 // Update CDs
-                playerSabotageCooldowns[sabSelected] = Sabotages.sabotageCDs[sabSelected];
-                playerSabotageDurs[sabSelected] = Sabotages.sabotageDurs[sabSelected];
+                playerSabotageCooldowns[sabSelected] = Sabotages.sabVars[sabSelected].CD;
+                playerSabotageDurs[sabSelected] = Sabotages.sabVars[sabSelected].dur;
                 playerGeneralSabCD = GENERAL_SABOTAGE_CD_DUR;
             }
         }

@@ -61,7 +61,6 @@ public class GameState : MonoBehaviour
         if (!resetting) {
 
             checkForGameStart();
-            releasePlayers();
             checkForReset();
             
         } else
@@ -146,15 +145,6 @@ public class GameState : MonoBehaviour
     }
     
 
-    void releasePlayers()
-    {
-        // Release players
-        if ((CompareTag("LobbyOnly")) && gameStarted)
-        {
-            Destroy(this.gameObject);
-        }
-    }
-
     void checkForReset()
     {
         if (alivePlayers.Count <= 1 && gameStarted)
@@ -175,7 +165,6 @@ public class GameState : MonoBehaviour
         }
 
         // Trigger resetting state
-        PlayerReset();
         resetting = true;
         cameraResetIncr = (mainCamera.transform.position - cameraStartingPos) / (50 * cameraResetTime);
 
@@ -229,6 +218,7 @@ public class GameState : MonoBehaviour
             resetting = false;
 
             // After camera do level
+            PlayerReset();
             ResetLevel();
         }
     }
