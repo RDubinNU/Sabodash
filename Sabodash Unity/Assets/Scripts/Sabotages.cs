@@ -58,7 +58,7 @@ public class Sabotages : MonoBehaviour
             if (sabTriggered == 0)
             {
                 callingPlayer.bank -= embiggenCost;
-                foreach (Player p in GameState.players)
+                foreach (Player p in GameState.alivePlayers)
                 {
                     if (p != callingPlayer)
                     {
@@ -72,7 +72,7 @@ public class Sabotages : MonoBehaviour
             else if (sabTriggered == 1)
             {
                 callingPlayer.bank -= greyScaleCost;
-                foreach (Player p in GameState.players)
+                foreach (Player p in GameState.alivePlayers)
                 {
                     if (p != callingPlayer)
                         p.sprite.color = Color.gray;
@@ -85,7 +85,7 @@ public class Sabotages : MonoBehaviour
             else if (sabTriggered == 2)
             {
                 callingPlayer.bank -= gravityCost;
-                foreach (Player p in GameState.players)
+                foreach (Player p in GameState.alivePlayers)
                 {
                     if (p != callingPlayer)
                     {
@@ -114,7 +114,7 @@ public class Sabotages : MonoBehaviour
 
         if(sabNumber == 0)
         {
-            foreach (Player p in GameState.players)
+            foreach (Player p in GameState.alivePlayers)
             {
                 if (p != player)
                 {
@@ -124,7 +124,7 @@ public class Sabotages : MonoBehaviour
         }
         else if (sabNumber == 1)
         {
-            foreach (Player p in GameState.players)
+            foreach (Player p in GameState.alivePlayers)
             {
                 if (p != player)
                 {
@@ -134,7 +134,7 @@ public class Sabotages : MonoBehaviour
         }
         else if (sabNumber == 2)
         {
-            foreach (Player p in GameState.players)
+            foreach (Player p in GameState.alivePlayers)
             {
                 if (p != player)
                 {

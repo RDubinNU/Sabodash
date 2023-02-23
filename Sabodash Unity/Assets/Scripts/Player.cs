@@ -17,6 +17,9 @@ public class Player : MonoBehaviour
     public int colourIndex = -1;
     public int playerWins = 0;
 
+    // Ready mechanics
+    public bool ready = false;
+    private bool readyReleased = true;
 
     // Controls
     private PlayerInput input;
@@ -47,8 +50,10 @@ public class Player : MonoBehaviour
     private bool grounded;
     public int bank = 0;
     public GameObject textPrefab;
-    private GameObject bank_txt;
-    private GameObject sab_txt;
+    public GameObject bank_txt;
+    public GameObject sab_txt;
+
+    public Vector3 spawnPoint = new Vector3(0, 0, 0);
 
     private const int numSabotages = 5;
     private String[] sabNames = new String[numSabotages] {"Big", "Grey", "Grav", "d", "e"};
@@ -92,21 +97,22 @@ public class Player : MonoBehaviour
             playerSabotageDurs.Add(-1);
         }
 
-        // Add player to game state handling
+        // Game state control
         GameState.AddPlayer(this);
+        
     }
 
     private void Update()
     {
         updateHUD();
         parseTriggers();
+        checkReady();
+
     }
 
     void FixedUpdate()
     {
         
-        // Game start behaviour
-        if (start.ReadValue<float>() > 0) GameState.gameStarted = true;
 
         // Physics updates
         grounded = IsGrounded();
@@ -115,6 +121,7 @@ public class Player : MonoBehaviour
         // Sabotage usage
         tickSabotageTimers();
         CheckForSabotageUse();
+
     }
     void parseTriggers()
     {
@@ -153,6 +160,22 @@ public class Player : MonoBehaviour
             }
         }
         
+    }
+
+    void checkReady()
+    {
+        if (!GameState.gameStarted)
+        {
+            if (sabotage.ReadValue<float>() > 0 && readyReleased)
+            {
+                ready = !ready;
+                readyReleased = false;
+                spawnPoint = rigbod.transform.position;
+            } else if (sabotage.ReadValue<float>() == 0)
+            {
+                readyReleased = true;
+            }
+        }
     }
 
     bool IsGrounded(){
@@ -219,7 +242,7 @@ public class Player : MonoBehaviour
 
     void CheckForSabotageUse()
     {
-        if (sabotage.ReadValue<float>() > 0)
+        if (GameState.gameStarted && sabotage.ReadValue<float>() > 0)
         {
             AttemptSabotageUse();
         }
@@ -242,26 +265,12 @@ public class Player : MonoBehaviour
 
     private void OnBecameInvisible()
     {
-        clearPlayer();
+        GameState.RemovePlayer(this);
     }
     void OnTriggerEnter2D(Collider2D col)
     {
         Destroy(col.gameObject);
         bank++;
-    }
-
-    void clearPlayer()
-    {
-        // Remove player from game state
-        GameState.RemovePlayer(this);
-
-        // Remove HUD
-        Destroy(bank_txt);
-        Destroy(sab_txt);
-    
-        // Destroy Player    
-        Destroy(this.gameObject);
-        Debug.Log("player died");
     }
 
     void updateHUD() {
@@ -273,6 +282,12 @@ public class Player : MonoBehaviour
             bank_txt.GetComponent<TextMeshPro>().text = bank.ToString();
             sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.75f);
             sab_txt.GetComponent<TextMeshPro>().text = sabNames[sabSelected];
+        } else
+        {
+            bank_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
+            if (ready) bank_txt.GetComponent<TextMeshPro>().text = "Ready!";
+            else bank_txt.GetComponent<TextMeshPro>().text = "";
+            sab_txt.GetComponent<TextMeshPro>().text = "";
         }
     }
 
