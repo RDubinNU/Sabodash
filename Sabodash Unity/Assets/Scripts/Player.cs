@@ -69,10 +69,10 @@ public class Player : MonoBehaviour
     private int sabSelected = 0;
     private bool triggerDown = false;
 
-    private List<float> playerSabotageCooldowns = new List<float>();
-    private List<float> playerSabotageDurs = new List<float>();
+    public List<float> playerSabotageCooldowns = new List<float>();
+    public List<float> playerSabotageDurs = new List<float>();
     private const int GENERAL_SABOTAGE_CD_DUR = 3;
-    private float playerGeneralSabCD = 0;
+    public float playerGeneralSabCD = 0;
 
     public int directionScale = 1;
 
@@ -310,7 +310,7 @@ public class Player : MonoBehaviour
         sprite.color = GameState.possibleColours[colourIndex];
     }
 
-    void tickSabotageTimers()
+    public void tickSabotageTimers()
     {
 
         // Update CDs

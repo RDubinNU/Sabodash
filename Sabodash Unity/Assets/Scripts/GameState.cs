@@ -148,6 +148,7 @@ public class GameState : MonoBehaviour
         ResetCamera();
         ResetLevel();
         ResetPlayers();
+        ResetSabotages();
     }
 
     void creditWinningPlayer()
@@ -205,5 +206,36 @@ public class GameState : MonoBehaviour
     void ResetCamera()
     {
         mainCamera.transform.position = cameraStartingPos;
+    }
+
+    void ResetSabotages() {
+        
+        foreach (Player p in alivePlayers)
+        {
+            // Tick reset cooldowns
+            for (int i = 0; i < p.playerSabotageCooldowns.Count; i++)
+            {
+                while (p.playerSabotageCooldowns[i] > 0)
+                {
+                    p.tickSabotageTimers();
+                }
+            }
+
+            // Tick reset durations
+            for (int i = 0; i < p.playerSabotageDurs.Count; i++)
+            {
+                while (p.playerSabotageDurs[i] > 0)
+                {
+                    p.tickSabotageTimers();
+                }
+            }
+
+            // Reset General CD
+            while (p.playerGeneralSabCD > 0)
+            {
+                p.tickSabotageTimers();
+            }
+        }
+
     }
 }
