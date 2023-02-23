@@ -318,11 +318,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7ef71e3f7ea1d24418ec4abb0cab0718, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerID: 0
+  colourIndex: -1
+  playerWins: 0
+  ready: 0
+  mat_normal: {fileID: 6200000, guid: 87b70404d4ecc354695d4a06e7c46787, type: 2}
+  mat_bouncy: {fileID: 6200000, guid: ee184e8f58249df4592bf2a949059c29, type: 2}
+  sab_vel_percent: 1
   rigbod: {fileID: 0}
   boxcollider: {fileID: 0}
   sprite: {fileID: 0}
   bank: 0
   textPrefab: {fileID: 8266491290818602519, guid: a22d5385ab4d64d4bb8c9335d42f1763, type: 3}
+  bank_txt: {fileID: 0}
+  sab_txt: {fileID: 0}
+  spawnPoint: {x: 0, y: 0, z: 0}
+  directionScale: 1
 --- !u!114 &8758057591487631587
 MonoBehaviour:
   m_ObjectHideFlags: 0
