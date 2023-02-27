@@ -63,9 +63,7 @@ public class Player : MonoBehaviour
 
     public Vector3 spawnPoint = new Vector3(0, 0, 0);
 
-    private const int numSabotages = 8;
-    private String[] sabNames = new String[numSabotages] {"Big", "Grey", "Grav", "Ctrl",
-                                                            "Bncy", "Slow", "Stop", "Frwd"};
+    private List<String> sabNames = new List<string>();
 
     private int sabSelected = 0;
     private bool triggerDown = false;
@@ -112,6 +110,7 @@ public class Player : MonoBehaviour
         {
             playerSabotageCooldowns.Add(0);
             playerSabotageDurs.Add(-1);
+            sabNames.Add(Sabotages.sabVars[i].name);
         }
 
         // Game state control
@@ -159,8 +158,8 @@ public class Player : MonoBehaviour
             {
                 triggerDown = false;
             }
-            if (sabSelected > numSabotages - 1) sabSelected = 0;
-            if (sabSelected < 0) sabSelected = numSabotages - 1;
+            if (sabSelected > Sabotages.sabotageCount - 1) sabSelected = 0;
+            if (sabSelected < 0) sabSelected = Sabotages.sabotageCount - 1;
         }
         else
         {

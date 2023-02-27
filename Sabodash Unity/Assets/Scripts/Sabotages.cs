@@ -28,7 +28,7 @@ public class Sabotages : MonoBehaviour
 
     // Sabotage costs and durations
 
-    public const int sabotageCount = 8;
+    public const int sabotageCount = 7;
 
     // Sabotage overlapping control
     private static bool[] sabotageInUse = new bool[sabotageCount];
@@ -43,7 +43,6 @@ public class Sabotages : MonoBehaviour
         new Sabotage("Grav", 5, 1, 5, false),
         new Sabotage("Ctrl", 5, 1, 5, false),
         new Sabotage("Bncy", 5, 1, 5, false),
-        new Sabotage("Slow", 5, 1, 5, false),
         new Sabotage("Stop", 3, 1, 5, false),
         new Sabotage("Frwd", 3, 1, 5, false),
     };
@@ -64,7 +63,7 @@ public class Sabotages : MonoBehaviour
 
             callingPlayer.bank -= sabVars[sabTriggered].cost;
 
-            // Makes other players bigger 
+            // Makes other players bigger and slower
             if (sabTriggered == 0)
             {
                 foreach (Player p in GameState.alivePlayers)
@@ -72,6 +71,7 @@ public class Sabotages : MonoBehaviour
                     if (p != callingPlayer)
                     {
                         p.gameObject.transform.localScale *= embiggenScale;
+                        p.sab_vel_percent = 0.5f;
                         p.outline.color = callingPlayer.sprite.color;
                     }
                 }
@@ -124,20 +124,9 @@ public class Sabotages : MonoBehaviour
                     }
                 }
             }
-            // Slowdown
-            else if (sabTriggered == 5)
-            {
-                foreach (Player p in GameState.alivePlayers)
-                {
-                    if (p != callingPlayer)
-                    {
-                        p.sab_vel_percent = 0.5f;
-                        p.outline.color = callingPlayer.sprite.color;
-                    }
-                }
-            }
+
             // Stop
-            else if (sabTriggered == 6)
+            else if (sabTriggered == 5)
             {
                 foreach (Player p in GameState.alivePlayers)
                 {
@@ -148,7 +137,7 @@ public class Sabotages : MonoBehaviour
                     }
                 }
             }
-            else if (sabTriggered == 7)
+            else if (sabTriggered == 6)
             {
                 Player furthest = callingPlayer;
                 foreach (Player p in GameState.alivePlayers)
@@ -185,6 +174,7 @@ public class Sabotages : MonoBehaviour
                 if (p != player)
                 {
                     p.gameObject.transform.localScale *= (1 / embiggenScale);
+                    p.sab_vel_percent = 1f;
                     p.outline.color = Color.black;
                 }
             }
@@ -247,17 +237,6 @@ public class Sabotages : MonoBehaviour
             }
         }
         else if (sabNumber == 6)
-        {
-            foreach (Player p in GameState.alivePlayers)
-            {
-                if (p != player)
-                {
-                    p.sab_vel_percent = 1f;
-                    p.outline.color = Color.black;
-                }
-            }
-        }
-        else if (sabNumber == 7)
         {
             foreach (Player p in GameState.alivePlayers)
             {
