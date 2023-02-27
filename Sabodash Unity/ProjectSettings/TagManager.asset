@@ -6,6 +6,7 @@ TagManager:
   tags:
   - LobbyOnly
   - Kill
+  - Outline
   layers:
   - Default
   - TransparentFX

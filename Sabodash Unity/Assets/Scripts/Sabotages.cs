@@ -69,7 +69,11 @@ public class Sabotages : MonoBehaviour
             {
                 foreach (Player p in GameState.alivePlayers)
                 {
-                    if (p != callingPlayer) p.gameObject.transform.localScale *= embiggenScale;
+                    if (p != callingPlayer)
+                    {
+                        p.gameObject.transform.localScale *= embiggenScale;
+                        p.outline.color = Color.white;
+                    }
                 }
             }
             // Makes other players gray
@@ -78,7 +82,10 @@ public class Sabotages : MonoBehaviour
                 foreach (Player p in GameState.alivePlayers)
                 {
                     if (p != callingPlayer)
+                    {
                         p.sprite.color = Color.gray;
+                        p.outline.color = Color.white;
+                    }
                 }
             }
             // Reverse gravity
@@ -86,7 +93,11 @@ public class Sabotages : MonoBehaviour
             {
                 foreach (Player p in GameState.alivePlayers)
                 {
-                    if (p != callingPlayer) p.rigbod.gravityScale *= -1;
+                    if (p != callingPlayer)
+                    {
+                        p.rigbod.gravityScale *= -1;
+                        p.outline.color = Color.white;
+                    }
                 }
             }
             // Reverse controls
@@ -94,7 +105,11 @@ public class Sabotages : MonoBehaviour
             {
                 foreach (Player p in GameState.alivePlayers)
                 {
-                    if (p != callingPlayer) p.directionScale *= -1;
+                    if (p != callingPlayer)
+                    {
+                        p.directionScale *= -1;
+                        p.outline.color = Color.white;
+                    }
                 }
             }
             // Bouncy
@@ -102,7 +117,11 @@ public class Sabotages : MonoBehaviour
             {
                 foreach (Player p in GameState.alivePlayers)
                 {
-                    if (p != callingPlayer) p.boxcollider.sharedMaterial = p.mat_bouncy;
+                    if (p != callingPlayer)
+                    {
+                        p.boxcollider.sharedMaterial = p.mat_bouncy;
+                        p.outline.color = Color.white;
+                    }
                 }
             }
             // Slowdown
@@ -110,7 +129,11 @@ public class Sabotages : MonoBehaviour
             {
                 foreach (Player p in GameState.alivePlayers)
                 {
-                    if (p != callingPlayer) p.sab_vel_percent = 0.5f;
+                    if (p != callingPlayer)
+                    {
+                        p.sab_vel_percent = 0.5f;
+                        p.outline.color = Color.white;
+                    }
                 }
             }
             // Stop
@@ -118,7 +141,11 @@ public class Sabotages : MonoBehaviour
             {
                 foreach (Player p in GameState.alivePlayers)
                 {
-                    if (p != callingPlayer) p.sab_vel_percent = 0f;
+                    if (p != callingPlayer)
+                    {
+                        p.sab_vel_percent = 0f;
+                        p.outline.color = Color.white;
+                    }
                 }
             }
             else if (sabTriggered == 7)
@@ -131,6 +158,7 @@ public class Sabotages : MonoBehaviour
                 Vector3 temp = furthest.transform.position;
                 furthest.transform.position = callingPlayer.transform.position;
                 callingPlayer.transform.position = temp;
+                furthest.outline.color = Color.white;
             }
 
             // Sabotage succesfully used
@@ -154,28 +182,44 @@ public class Sabotages : MonoBehaviour
         {
             foreach (Player p in GameState.alivePlayers)
             {
-                if (p != player) p.gameObject.transform.localScale *= (1 / embiggenScale);
+                if (p != player)
+                {
+                    p.gameObject.transform.localScale *= (1 / embiggenScale);
+                    p.outline.color = Color.black;
+                }
             }
         }
         else if (sabNumber == 1)
         {
             foreach (Player p in GameState.alivePlayers)
             {
-                if (p != player) p.sprite.color = GameState.possibleColours[p.colourIndex];
+                if (p != player)
+                {
+                    p.sprite.color = GameState.possibleColours[p.colourIndex];
+                    p.outline.color = Color.black;
+                }
             }
         }
         else if (sabNumber == 2)
         {
             foreach (Player p in GameState.alivePlayers)
             {
-                if (p != player) p.rigbod.gravityScale *= -1;
+                if (p != player)
+                {
+                    p.rigbod.gravityScale *= -1;
+                    p.outline.color = Color.black;
+                }
             }
         }
         else if (sabNumber == 3)
         {
             foreach (Player p in GameState.alivePlayers)
             {
-                if (p != player) p.directionScale *= -1;
+                if (p != player)
+                {
+                    p.directionScale *= -1;
+                    p.outline.color = Color.black;
+                }
             }
         }
 
@@ -183,7 +227,11 @@ public class Sabotages : MonoBehaviour
         {
             foreach (Player p in GameState.alivePlayers)
             {
-                if (p != player) p.boxcollider.sharedMaterial = p.mat_normal;
+                if (p != player)
+                {
+                    p.boxcollider.sharedMaterial = p.mat_normal;
+                    p.outline.color = Color.black;
+                }
             }
         }
 
@@ -191,19 +239,33 @@ public class Sabotages : MonoBehaviour
         {
             foreach (Player p in GameState.alivePlayers)
             {
-                if (p != player) p.sab_vel_percent = 1f;
+                if (p != player)
+                {
+                    p.sab_vel_percent = 1f;
+                    p.outline.color = Color.black;
+                }
             }
         }
         else if (sabNumber == 6)
         {
             foreach (Player p in GameState.alivePlayers)
             {
-                if (p != player) p.sab_vel_percent = 1f;
+                if (p != player)
+                {
+                    p.sab_vel_percent = 1f;
+                    p.outline.color = Color.black;
+                }
             }
         }
         else if (sabNumber == 7)
         {
-            //nothing happens here
+            foreach (Player p in GameState.alivePlayers)
+            {
+                if (p != player)
+                {
+                    p.outline.color = Color.black;
+                }
+            }
         }
 
         sabotageInUse[sabNumber] = false;
