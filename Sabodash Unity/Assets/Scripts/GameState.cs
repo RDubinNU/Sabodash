@@ -143,7 +143,7 @@ public class GameState : MonoBehaviour
 
     private void Reset()
     {
-        gameStarted = false;
+        ResetGameState();
         creditWinningPlayer();
         ResetCamera();
         ResetLevel();
@@ -151,6 +151,11 @@ public class GameState : MonoBehaviour
         ResetSabotages();
     }
 
+    void ResetGameState()
+    {
+        gameStarted = false;
+        gameSpeed = 1;
+    }
     void creditWinningPlayer()
     {
 
@@ -175,7 +180,6 @@ public class GameState : MonoBehaviour
             resetPlayerToLobby(p);
             alivePlayers.Add(p);
 
-            // TODO Reset Active Sabotages
         }
 
         deadPlayers.Clear();

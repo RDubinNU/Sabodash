@@ -60,10 +60,15 @@ public class Generator : MonoBehaviour
 
     public void SpawnLevelSection()
     {
+        // Section spawning
+
         Transform latestSectionTransform = SpawnLevelSection(latestSectionEndPos);
         renderedSections.Add(latestSectionTransform);
 
         latestSectionEndPos = latestSectionTransform.Find("SectionEnd").position;
+
+        // Up game speed
+        GameState.gameSpeed *= 1.0025f;
     }
         
 

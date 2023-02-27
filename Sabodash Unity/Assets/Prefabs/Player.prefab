@@ -414,7 +414,7 @@ MonoBehaviour:
   boxcollider: {fileID: 0}
   sprite: {fileID: 0}
   outline: {fileID: 0}
-  bank: 10
+  bank: 0
   textPrefab: {fileID: 8266491290818602519, guid: a22d5385ab4d64d4bb8c9335d42f1763, type: 3}
   bank_txt: {fileID: 0}
   sab_txt: {fileID: 0}

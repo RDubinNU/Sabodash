@@ -42,11 +42,14 @@ public class Player : MonoBehaviour
     float fly_delay = 0.2f;
     float jump_cd = 0.1f;
 
+    float cur_game_speed = 1f;
+    float defaultGravity = 2;
 
-    //Variables for Bouncy Sabotage (4)
+
+    // Variables for Bouncy Sabotage (4)
     public PhysicsMaterial2D mat_normal;
     public PhysicsMaterial2D mat_bouncy;
-    //Variables for Pullback Sabotage (5)
+    // Variables for Pullback Sabotage (5)
     public float sab_vel_percent = 1;
 
 
@@ -81,6 +84,7 @@ public class Player : MonoBehaviour
         // Physics Instantiation
         rigbod = GetComponent<Rigidbody2D>();
         boxcollider = GetComponent<BoxCollider2D>();
+        rigbod.gravityScale = defaultGravity;
 
         // Input Instantiation
         input = GetComponent<PlayerInput>();
@@ -116,6 +120,7 @@ public class Player : MonoBehaviour
         // Game state control
         GameState.AddPlayer(this);
 
+
     }
 
     private void Update()
@@ -123,6 +128,12 @@ public class Player : MonoBehaviour
         updateHUD();
         parseTriggers();
         checkReady();
+
+        // Check for gravity change
+        if (GameState.gameSpeed != cur_game_speed)
+        {
+            rigbod.gravityScale = defaultGravity * GameState.gameSpeed;
+        }
 
     }
 
@@ -218,8 +229,8 @@ public class Player : MonoBehaviour
         // Horizontal acceleration control
         float accel_x = lr.ReadValue<float>();
 
-        accel_x = accel_x * horizontal_accel_speed * directionScale;
-        if (Math.Abs(rigbod.velocity.x + accel_x) > maxvel_x * sab_vel_percent)
+        accel_x = accel_x * horizontal_accel_speed * directionScale * GameState.gameSpeed;
+        if (Math.Abs(rigbod.velocity.x + accel_x) > maxvel_x * sab_vel_percent * GameState.gameSpeed)
         {
             accel_x = 0; // Clipping acceleration vs velocity allows fun side sliding on slanted surfaces
         }
@@ -231,12 +242,12 @@ public class Player : MonoBehaviour
         {
             if (grounded & Time.time > last_jump + jump_cd)
             {
-                accel_y = jumpstrength * Math.Sign(rigbod.gravityScale);
+                accel_y = jumpstrength * GameState.gameSpeed * Math.Sign(rigbod.gravityScale);
                 last_jump = Time.time;
             }
             else if ((Time.time > last_jump + fly_delay))
             {
-                accel_y = fly_accel * Math.Sign(rigbod.gravityScale);
+                accel_y = fly_accel * GameState.gameSpeed * Math.Sign(rigbod.gravityScale);
             }
         }
 
@@ -247,15 +258,15 @@ public class Player : MonoBehaviour
 
         // Fly Capping
 
-        if (rigbod.velocity.y >= maxvel_y && rigbod.gravityScale > 0)
+        if (rigbod.velocity.y >= maxvel_y * GameState.gameSpeed && rigbod.gravityScale > 0)
         {
             rigbod.velocity = new Vector2(rigbod.velocity.x,
-                                            maxvel_y);
+                                            maxvel_y * GameState.gameSpeed);
         }
-        else if ((rigbod.velocity.y <= -maxvel_y) && rigbod.gravityScale < 0)
+        else if ((rigbod.velocity.y <= -maxvel_y * GameState.gameSpeed) && rigbod.gravityScale < 0)
         {
             rigbod.velocity = new Vector2(rigbod.velocity.x,
-                                            -maxvel_y);
+                                            -maxvel_y * GameState.gameSpeed);
         }
 
 
