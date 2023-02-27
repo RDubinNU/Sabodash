@@ -72,7 +72,7 @@ public class Sabotages : MonoBehaviour
                     if (p != callingPlayer)
                     {
                         p.gameObject.transform.localScale *= embiggenScale;
-                        p.outline.color = Color.white;
+                        p.outline.color = callingPlayer.sprite.color;
                     }
                 }
             }
@@ -84,7 +84,7 @@ public class Sabotages : MonoBehaviour
                     if (p != callingPlayer)
                     {
                         p.sprite.color = Color.gray;
-                        p.outline.color = Color.white;
+                        p.outline.color = callingPlayer.sprite.color;
                     }
                 }
             }
@@ -96,7 +96,7 @@ public class Sabotages : MonoBehaviour
                     if (p != callingPlayer)
                     {
                         p.rigbod.gravityScale *= -1;
-                        p.outline.color = Color.white;
+                        p.outline.color = callingPlayer.sprite.color;
                     }
                 }
             }
@@ -108,7 +108,7 @@ public class Sabotages : MonoBehaviour
                     if (p != callingPlayer)
                     {
                         p.directionScale *= -1;
-                        p.outline.color = Color.white;
+                        p.outline.color = callingPlayer.sprite.color;
                     }
                 }
             }
@@ -120,7 +120,7 @@ public class Sabotages : MonoBehaviour
                     if (p != callingPlayer)
                     {
                         p.boxcollider.sharedMaterial = p.mat_bouncy;
-                        p.outline.color = Color.white;
+                        p.outline.color = callingPlayer.sprite.color;
                     }
                 }
             }
@@ -132,7 +132,7 @@ public class Sabotages : MonoBehaviour
                     if (p != callingPlayer)
                     {
                         p.sab_vel_percent = 0.5f;
-                        p.outline.color = Color.white;
+                        p.outline.color = callingPlayer.sprite.color;
                     }
                 }
             }
@@ -144,7 +144,7 @@ public class Sabotages : MonoBehaviour
                     if (p != callingPlayer)
                     {
                         p.sab_vel_percent = 0f;
-                        p.outline.color = Color.white;
+                        p.outline.color = callingPlayer.sprite.color;
                     }
                 }
             }
@@ -158,7 +158,7 @@ public class Sabotages : MonoBehaviour
                 Vector3 temp = furthest.transform.position;
                 furthest.transform.position = callingPlayer.transform.position;
                 callingPlayer.transform.position = temp;
-                furthest.outline.color = Color.white;
+                furthest.outline.color = callingPlayer.sprite.color;
             }
 
             // Sabotage succesfully used

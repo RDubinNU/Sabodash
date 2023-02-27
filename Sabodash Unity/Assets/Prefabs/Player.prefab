@@ -109,8 +109,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2303272102557262029}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.001, y: -0.005, z: 0}
-  m_LocalScale: {x: 1.1061813, y: 1.1032699, z: 1}
+  m_LocalPosition: {x: -0, y: 0.002, z: 0}
+  m_LocalScale: {x: 1.1316234, y: 1.1263282, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8166247680433522923}
@@ -414,7 +414,7 @@ MonoBehaviour:
   boxcollider: {fileID: 0}
   sprite: {fileID: 0}
   outline: {fileID: 0}
-  bank: 2
+  bank: 0
   textPrefab: {fileID: 8266491290818602519, guid: a22d5385ab4d64d4bb8c9335d42f1763, type: 3}
   bank_txt: {fileID: 0}
   sab_txt: {fileID: 0}
