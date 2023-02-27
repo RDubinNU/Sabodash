@@ -54,6 +54,7 @@ public class Player : MonoBehaviour
     public Rigidbody2D rigbod;
     public BoxCollider2D boxcollider;
     public SpriteRenderer sprite;
+    public SpriteRenderer outline;
     private bool grounded;
     public int bank = 0;
     public GameObject textPrefab;
@@ -62,9 +63,7 @@ public class Player : MonoBehaviour
 
     public Vector3 spawnPoint = new Vector3(0, 0, 0);
 
-    private const int numSabotages = 8;
-    private String[] sabNames = new String[numSabotages] {"Big", "Grey", "Grav", "Ctrl",
-                                                            "Bncy", "Slow", "Stop", "Frwd"};
+    private List<String> sabNames = new List<string>();
 
     private int sabSelected = 0;
     private bool triggerDown = false;
@@ -76,7 +75,8 @@ public class Player : MonoBehaviour
 
     public int directionScale = 1;
 
-    void Start() {
+    void Start()
+    {
 
         // Physics Instantiation
         rigbod = GetComponent<Rigidbody2D>();
@@ -92,6 +92,11 @@ public class Player : MonoBehaviour
 
         // Sprite Instantiation
         sprite = GetComponent<SpriteRenderer>();
+        SpriteRenderer[] sprites = FindObjectOfType<SpriteRenderer>().GetComponents<SpriteRenderer>();
+        foreach(SpriteRenderer spr in sprites)
+        {
+            if (spr.CompareTag("Outline")) outline = spr;
+        }
         updatePlayerColour(1);
 
         // HUD Instantiation
@@ -105,11 +110,12 @@ public class Player : MonoBehaviour
         {
             playerSabotageCooldowns.Add(0);
             playerSabotageDurs.Add(-1);
+            sabNames.Add(Sabotages.sabVars[i].name);
         }
 
         // Game state control
         GameState.AddPlayer(this);
-        
+
     }
 
     private void Update()
@@ -122,7 +128,7 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
-        
+
 
         // Physics updates
         grounded = IsGrounded();
@@ -138,20 +144,24 @@ public class Player : MonoBehaviour
         if (GameState.gameStarted)
         {
             // Sabotage Handling
-            if (triggers.ReadValue<float>() > 0 && !triggerDown){
+            if (triggers.ReadValue<float>() > 0 && !triggerDown)
+            {
                 sabSelected++;
                 triggerDown = true;
-            } else if (triggers.ReadValue<float>() < 0 && !triggerDown)
+            }
+            else if (triggers.ReadValue<float>() < 0 && !triggerDown)
             {
                 sabSelected--;
                 triggerDown = true;
-            } else if (triggers.ReadValue<float>() == 0)
+            }
+            else if (triggers.ReadValue<float>() == 0)
             {
                 triggerDown = false;
             }
-            if (sabSelected > numSabotages - 1) sabSelected = 0;
-            if (sabSelected < 0) sabSelected = numSabotages - 1;
-        } else
+            if (sabSelected > Sabotages.sabotageCount - 1) sabSelected = 0;
+            if (sabSelected < 0) sabSelected = Sabotages.sabotageCount - 1;
+        }
+        else
         {
             // Colour Selection
             if (triggers.ReadValue<float>() > 0 && !triggerDown)
@@ -169,7 +179,7 @@ public class Player : MonoBehaviour
                 triggerDown = false;
             }
         }
-        
+
     }
 
     void checkReady()
@@ -181,26 +191,30 @@ public class Player : MonoBehaviour
                 ready = !ready;
                 readyReleased = false;
                 spawnPoint = rigbod.transform.position;
-            } else if (sabotage.ReadValue<float>() == 0)
+            }
+            else if (sabotage.ReadValue<float>() == 0)
             {
                 readyReleased = true;
             }
         }
     }
 
-    bool IsGrounded(){
+    bool IsGrounded()
+    {
         // Grounding check for jumps
 
         float tolerance = 0.025f;
         Vector3 raycast_origin = boxcollider.bounds.center + (Vector3)Vector2.down * boxcollider.bounds.extents.y;
         RaycastHit2D ground_raycast = Physics2D.Raycast(raycast_origin, Math.Sign(rigbod.gravityScale) * Vector2.down, tolerance);
         bool on_ground = false;
-        if (ground_raycast.collider != null && rigbod.velocity.y <= 0.05) {
+        if (ground_raycast.collider != null && rigbod.velocity.y <= 0.05)
+        {
             on_ground = true;
-        } 
+        }
         return (on_ground);
     }
-    void MoveAnywhere(){
+    void MoveAnywhere()
+    {
         // Horizontal acceleration control
         float accel_x = lr.ReadValue<float>();
 
@@ -237,7 +251,8 @@ public class Player : MonoBehaviour
         {
             rigbod.velocity = new Vector2(rigbod.velocity.x,
                                             maxvel_y);
-        } else if ((rigbod.velocity.y <= -maxvel_y) && rigbod.gravityScale < 0)
+        }
+        else if ((rigbod.velocity.y <= -maxvel_y) && rigbod.gravityScale < 0)
         {
             rigbod.velocity = new Vector2(rigbod.velocity.x,
                                             -maxvel_y);
@@ -245,7 +260,8 @@ public class Player : MonoBehaviour
 
 
         // Frictional Slowing
-        if(grounded && accel_x == 0){
+        if (grounded && accel_x == 0)
+        {
             rigbod.velocity = new Vector2(rigbod.velocity.x * 0.95f, rigbod.velocity.y);
         }
     }
@@ -263,8 +279,9 @@ public class Player : MonoBehaviour
         if (playerSabotageCooldowns[sabSelected] == 0 && playerGeneralSabCD == 0)
         {
             bool applied = Sabotages.ApplySabotage(sabSelected, this);
-            
-            if (applied) {
+
+            if (applied)
+            {
                 // Update CDs
                 playerSabotageCooldowns[sabSelected] = Sabotages.sabVars[sabSelected].CD;
                 playerSabotageDurs[sabSelected] = Sabotages.sabVars[sabSelected].dur;
@@ -286,7 +303,8 @@ public class Player : MonoBehaviour
         bank++;
     }
 
-    void updateHUD() {
+    void updateHUD()
+    {
 
         if (GameState.gameStarted)
         {
@@ -295,7 +313,8 @@ public class Player : MonoBehaviour
             bank_txt.GetComponent<TextMeshPro>().text = bank.ToString();
             sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.75f);
             sab_txt.GetComponent<TextMeshPro>().text = sabNames[sabSelected];
-        } else
+        }
+        else
         {
             bank_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
             if (ready) bank_txt.GetComponent<TextMeshPro>().text = "Ready!";
@@ -316,7 +335,7 @@ public class Player : MonoBehaviour
         // Update CDs
 
         // Update Individual Timers
-        for (int i = 0; i < playerSabotageDurs.Count; i++) 
+        for (int i = 0; i < playerSabotageDurs.Count; i++)
         {
             // Tick timers
             playerSabotageCooldowns[i] -= Time.fixedDeltaTime;
@@ -330,10 +349,11 @@ public class Player : MonoBehaviour
 
             // Update durations and reset
             if (playerSabotageDurs[i] < 0 && playerSabotageDurs[i] > -1)
-            { 
+            {
                 Sabotages.ResetSabotage(i, this);
                 playerSabotageDurs[i] = -1;
-            } else if (playerSabotageDurs[i] < -1)
+            }
+            else if (playerSabotageDurs[i] < -1)
             {
                 playerSabotageDurs[i] = -1;
             }
