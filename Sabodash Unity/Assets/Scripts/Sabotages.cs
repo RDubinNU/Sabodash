@@ -28,7 +28,7 @@ public class Sabotages : MonoBehaviour
 
     // Sabotage costs and durations
 
-    public const int sabotageCount = 7;
+    public const int sabotageCount = 8;
 
     // Sabotage overlapping control
     private static bool[] sabotageInUse = new bool[sabotageCount];
@@ -45,6 +45,7 @@ public class Sabotages : MonoBehaviour
         new Sabotage("Bncy", 5, 1, 5, false),
         new Sabotage("Stop", 3, 1, 5, false),
         new Sabotage("Frwd", 3, 1, 5, false),
+        new Sabotage("Lockout", 3, 1, 3, false),
     };
 
     void Start()
@@ -150,12 +151,26 @@ public class Sabotages : MonoBehaviour
                 furthest.outline.color = callingPlayer.sprite.color;
             }
 
+
+
+
+            if (sabTriggered == 7)
+            {
+                // Buy Lockout
+                foreach (Player p in GameState.alivePlayers)
+                {
+                    if (p != callingPlayer)
+                    {
+                        p.playerGeneralSabCD = sabVars[sabotageCount].dur;
+                    }
+                }
+            }
+
             // Sabotage succesfully used
             sabotageInUse[sabTriggered] = true;
             return true;
-
-
         }
+
         else
         {
             // Sabotage failed to use
@@ -242,6 +257,18 @@ public class Sabotages : MonoBehaviour
             {
                 if (p != player)
                 {
+                    p.outline.color = Color.black;
+                }
+            }
+        }
+
+        else if (sabNumber == 7)
+        {
+            foreach (Player p in GameState.alivePlayers)
+            {
+                if (p != player)
+                {
+                    // Reset handled by sabotage ticking
                     p.outline.color = Color.black;
                 }
             }

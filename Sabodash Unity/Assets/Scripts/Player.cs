@@ -42,6 +42,11 @@ public class Player : MonoBehaviour
     float fly_delay = 0.2f;
     float jump_cd = 0.1f;
 
+<<<<<<< Updated upstream
+=======
+    float cur_game_speed;
+    float defaultGravity = 2;
+>>>>>>> Stashed changes
 
     //Variables for Bouncy Sabotage (4)
     public PhysicsMaterial2D mat_normal;
@@ -115,6 +120,7 @@ public class Player : MonoBehaviour
 
         // Game state control
         GameState.AddPlayer(this);
+        cur_game_speed = GameState.gameSpeed;
 
     }
 
@@ -124,6 +130,16 @@ public class Player : MonoBehaviour
         parseTriggers();
         checkReady();
 
+<<<<<<< Updated upstream
+=======
+        // Check for gravity change
+        if (GameState.gameSpeed != cur_game_speed)
+        {
+            rigbod.gravityScale = rigbod.gravityScale * (1 + GameState.gameSpeed - cur_game_speed);
+            cur_game_speed = GameState.gameSpeed;
+        }
+
+>>>>>>> Stashed changes
     }
 
     void FixedUpdate()
