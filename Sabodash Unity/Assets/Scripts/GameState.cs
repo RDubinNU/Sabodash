@@ -174,8 +174,6 @@ public class GameState : MonoBehaviour
             p.bank = 0;
             resetPlayerToLobby(p);
             alivePlayers.Add(p);
-
-            // TODO Reset Active Sabotages
         }
 
         deadPlayers.Clear();
