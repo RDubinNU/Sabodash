@@ -213,26 +213,24 @@ public class GameState : MonoBehaviour
             // Tick reset cooldowns
             for (int i = 0; i < p.playerSabotageCooldowns.Count; i++)
             {
-                while (p.playerSabotageCooldowns[i] > 0)
+                if (p.playerSabotageCooldowns[i] > 0)
                 {
-                    p.tickSabotageTimers();
+                    p.playerSabotageCooldowns[i] = 0;
                 }
             }
 
             // Tick reset durations
             for (int i = 0; i < p.playerSabotageDurs.Count; i++)
             {
-                while (p.playerSabotageDurs[i] > 0)
+                if (p.playerSabotageDurs[i] > -1)
                 {
-                    p.tickSabotageTimers();
+                    p.playerSabotageDurs[i] = -1;
+                    Sabotages.ResetSabotage(i, p);
                 }
             }
 
-            // Reset General CD
-            while (p.playerGeneralSabCD > 0)
-            {
-                p.tickSabotageTimers();
-            }
+            p.playerGeneralSabCD = 0;
+            
         }
 
     }
