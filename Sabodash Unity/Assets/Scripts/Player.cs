@@ -42,6 +42,8 @@ public class Player : MonoBehaviour
     float fly_delay = 0.2f;
     float jump_cd = 0.1f;
 
+    float cur_game_speed;
+    float defaultGravity = 2;
 
     //Variables for Bouncy Sabotage (4)
     public PhysicsMaterial2D mat_normal;
@@ -63,8 +65,6 @@ public class Player : MonoBehaviour
 
     public Vector3 spawnPoint = new Vector3(0, 0, 0);
 
-    private List<String> sabNames = new List<string>();
-
     private int sabSelected = 0;
     private bool triggerDown = false;
 
@@ -81,6 +81,7 @@ public class Player : MonoBehaviour
         // Physics Instantiation
         rigbod = GetComponent<Rigidbody2D>();
         boxcollider = GetComponent<BoxCollider2D>();
+        rigbod.gravityScale = defaultGravity;
 
         // Input Instantiation
         input = GetComponent<PlayerInput>();
@@ -106,15 +107,15 @@ public class Player : MonoBehaviour
         sab_txt.GetComponent<TextMeshPro>().text = "";
 
         // Sabotage instantiation
-        for (int i = 0; i < Sabotages.sabotageCount; i++)
+        for (int i = 0; i < Sabotages.sabVars.Count; i++)
         {
             playerSabotageCooldowns.Add(0);
             playerSabotageDurs.Add(-1);
-            sabNames.Add(Sabotages.sabVars[i].name);
         }
 
         // Game state control
         GameState.AddPlayer(this);
+        cur_game_speed = GameState.gameSpeed;
 
     }
 
@@ -124,20 +125,27 @@ public class Player : MonoBehaviour
         parseTriggers();
         checkReady();
 
+        // Check for gravity change
+        if (GameState.gameSpeed != cur_game_speed)
+        {
+            rigbod.gravityScale = rigbod.gravityScale * (1 + GameState.gameSpeed - cur_game_speed);
+            cur_game_speed = GameState.gameSpeed;
+        }
+
     }
 
     void FixedUpdate()
     {
+        if (GameState.alivePlayers.Contains(this))
+        {
+            // Physics updates
+            grounded = IsGrounded();
+            MoveAnywhere();
 
-
-        // Physics updates
-        grounded = IsGrounded();
-        MoveAnywhere();
-
-        // Sabotage usage
-        tickSabotageTimers();
-        CheckForSabotageUse();
-
+            // Sabotage usage
+            tickSabotageTimers();
+            CheckForSabotageUse();
+        }
     }
     void parseTriggers()
     {
@@ -158,8 +166,8 @@ public class Player : MonoBehaviour
             {
                 triggerDown = false;
             }
-            if (sabSelected > Sabotages.sabotageCount - 1) sabSelected = 0;
-            if (sabSelected < 0) sabSelected = Sabotages.sabotageCount - 1;
+            if (sabSelected > Sabotages.sabVars.Count - 1) sabSelected = 0;
+            if (sabSelected < 0) sabSelected = Sabotages.sabVars.Count - 1;
         }
         else
         {
@@ -312,7 +320,7 @@ public class Player : MonoBehaviour
             bank_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
             bank_txt.GetComponent<TextMeshPro>().text = bank.ToString();
             sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.75f);
-            sab_txt.GetComponent<TextMeshPro>().text = sabNames[sabSelected];
+            sab_txt.GetComponent<TextMeshPro>().text = Sabotages.sabNamesList[sabSelected];
         }
         else
         {
@@ -362,9 +370,6 @@ public class Player : MonoBehaviour
         // Update general timer
         playerGeneralSabCD -= Time.fixedDeltaTime;
         if (playerGeneralSabCD < 0) playerGeneralSabCD = 0;
-
-
-        // Update Durations
 
     }
 }

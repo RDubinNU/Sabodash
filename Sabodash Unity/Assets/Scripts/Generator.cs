@@ -64,6 +64,9 @@ public class Generator : MonoBehaviour
         renderedSections.Add(latestSectionTransform);
 
         latestSectionEndPos = latestSectionTransform.Find("SectionEnd").position;
+
+        // Update game speed
+        GameState.gameSpeed *= 1.05f;
     }
         
 
