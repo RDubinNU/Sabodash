@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4755000004622103827}
   - component: {fileID: 4012910181342734030}
   - component: {fileID: 5054562970351452676}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Wall Mobile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -127,9 +127,9 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 6200000, guid: 79d43fe56e89c1246bbc4ade0f1d0581, type: 2}
+  m_GravityScale: 2
+  m_Material: {fileID: 6200000, guid: 6f7a5d0116e5d934bb4edcc20cb54c95, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 3
+  m_Constraints: 0
