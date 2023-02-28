@@ -65,8 +65,6 @@ public class Player : MonoBehaviour
 
     public Vector3 spawnPoint = new Vector3(0, 0, 0);
 
-    private List<String> sabNames = new List<string>();
-
     private int sabSelected = 0;
     private bool triggerDown = false;
 
@@ -109,11 +107,10 @@ public class Player : MonoBehaviour
         sab_txt.GetComponent<TextMeshPro>().text = "";
 
         // Sabotage instantiation
-        for (int i = 0; i < Sabotages.sabotageCount; i++)
+        for (int i = 0; i < Sabotages.sabVars.Count; i++)
         {
             playerSabotageCooldowns.Add(0);
             playerSabotageDurs.Add(-1);
-            sabNames.Add(Sabotages.sabVars[i].name);
         }
 
         // Game state control
@@ -139,16 +136,16 @@ public class Player : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (GameState.alivePlayers.Contains(this))
+        {
+            // Physics updates
+            grounded = IsGrounded();
+            MoveAnywhere();
 
-
-        // Physics updates
-        grounded = IsGrounded();
-        MoveAnywhere();
-
-        // Sabotage usage
-        tickSabotageTimers();
-        CheckForSabotageUse();
-
+            // Sabotage usage
+            tickSabotageTimers();
+            CheckForSabotageUse();
+        }
     }
     void parseTriggers()
     {
@@ -169,8 +166,8 @@ public class Player : MonoBehaviour
             {
                 triggerDown = false;
             }
-            if (sabSelected > Sabotages.sabotageCount - 1) sabSelected = 0;
-            if (sabSelected < 0) sabSelected = Sabotages.sabotageCount - 1;
+            if (sabSelected > Sabotages.sabVars.Count - 1) sabSelected = 0;
+            if (sabSelected < 0) sabSelected = Sabotages.sabVars.Count - 1;
         }
         else
         {
@@ -323,7 +320,7 @@ public class Player : MonoBehaviour
             bank_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
             bank_txt.GetComponent<TextMeshPro>().text = bank.ToString();
             sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.75f);
-            sab_txt.GetComponent<TextMeshPro>().text = sabNames[sabSelected];
+            sab_txt.GetComponent<TextMeshPro>().text = Sabotages.sabNamesList[sabSelected];
         }
         else
         {

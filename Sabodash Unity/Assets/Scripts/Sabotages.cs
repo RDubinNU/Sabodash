@@ -26,33 +26,38 @@ public class Sabotages : MonoBehaviour
         }
     }
 
-    // Sabotage costs and durations
-
-    public const int sabotageCount = 8;
-
     // Sabotage overlapping control
-    private static bool[] sabotageInUse = new bool[sabotageCount];
+    private static List<bool> sabotageInUse = new List<bool>();
 
     private static float embiggenScale = 1.5f;
-    public static String[] namesList = new String[sabotageCount];
+    public static List<String> sabNamesList = new List<String>(); 
 
-    //Sabotage(name, duration, cost, cd, overlappable)
-    public static Sabotage[] sabVars = new Sabotage[sabotageCount]{
-        new Sabotage("Big ", 5, 1, 5, false),
-        new Sabotage("Grey", 5, 1, 5, false),
-        new Sabotage("Grav", 5, 1, 5, false),
-        new Sabotage("Ctrl", 5, 1, 5, false),
-        new Sabotage("Bncy", 5, 1, 5, false),
-        new Sabotage("Stop", 3, 1, 5, false),
-        new Sabotage("Frwd", 3, 1, 5, false),
-        new Sabotage("Lockout", 3, 1, 3, false),
-    };
+    // Sabotage costs and durations
+    // Sabotage(name, duration, cost, cd, overlappable)
+    public static List<Sabotage> sabVars = new List<Sabotage>();
+       
 
     void Start()
     {
-        for (int i = 0; i < sabotageCount; i++)
+
+        sabVars.Add(new Sabotage("Big ", 5, 1, 5, false));
+        sabVars.Add(new Sabotage("Grey", 5, 1, 5, false));
+        sabVars.Add(new Sabotage("Grav", 5, 1, 5, false));
+        sabVars.Add(new Sabotage("Ctrl", 5, 1, 5, false));
+        sabVars.Add(new Sabotage("Bncy", 5, 1, 5, false));
+        sabVars.Add(new Sabotage("Stop", 3, 1, 5, false));
+        sabVars.Add(new Sabotage("Frwd", 3, 1, 5, false));
+        sabVars.Add(new Sabotage("Lockout", 3, 1, 3, false));
+
+        // Initialize control lists
+        for (int i = 0; i < sabVars.Count; i++)
         {
-            namesList[i] = sabVars[i].name;
+            // Add to names
+            sabNamesList.Add(sabVars[i].name);
+
+            // Usage
+            sabotageInUse.Add(false);
+
         }
     }
 
@@ -151,20 +156,6 @@ public class Sabotages : MonoBehaviour
                 furthest.outline.color = callingPlayer.sprite.color;
             }
 
-
-
-
-            if (sabTriggered == 7)
-            {
-                // Buy Lockout
-                foreach (Player p in GameState.alivePlayers)
-                {
-                    if (p != callingPlayer)
-                    {
-                        p.playerGeneralSabCD = sabVars[sabotageCount].dur;
-                    }
-                }
-            }
 
             // Sabotage succesfully used
             sabotageInUse[sabTriggered] = true;
