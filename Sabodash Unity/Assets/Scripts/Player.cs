@@ -124,14 +124,7 @@ public class Player : MonoBehaviour
         updateHUD();
         parseTriggers();
         checkReady();
-
-        // Check for gravity change
-        if (GameState.gameSpeed != cur_game_speed)
-        {
-            rigbod.gravityScale = rigbod.gravityScale * (1 + GameState.gameSpeed - cur_game_speed);
-            cur_game_speed = GameState.gameSpeed;
-        }
-
+        updateGravity();
     }
 
     void FixedUpdate()
@@ -274,6 +267,15 @@ public class Player : MonoBehaviour
         }
     }
 
+    void updateGravity()
+    {
+        // Check for gravity change
+        if (GameState.gameSpeed != cur_game_speed)
+        {
+            rigbod.gravityScale = rigbod.gravityScale * (1 + GameState.gameSpeed - cur_game_speed);
+            cur_game_speed = GameState.gameSpeed;
+        }
+    }
     void CheckForSabotageUse()
     {
         if (GameState.gameStarted && sabotage.ReadValue<float>() > 0)
