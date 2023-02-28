@@ -309,8 +309,10 @@ public class Player : MonoBehaviour
     }
     void OnTriggerEnter2D(Collider2D col)
     {
-        Destroy(col.gameObject);
-        bank++;
+        if(col.tag == "Coin") {
+            Destroy(col.gameObject);
+            bank++;
+        }
     }
 
     void updateHUD()
