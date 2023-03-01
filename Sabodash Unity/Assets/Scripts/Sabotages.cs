@@ -1,3 +1,4 @@
+using Mono.Cecil;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,16 +14,16 @@ public class Sabotages : MonoBehaviour
         public String name;
         public int dur;
         public int cost;
-        public int CD;
         public bool overlappable;
+        public int relProb;
 
-        public Sabotage(String newname, int duration, int mycost, int mycd, bool overlap)
+        public Sabotage(String newname, int duration, int mycost, bool overlap, int relativeProb)
         {
             name = newname;
             dur = duration;
             cost = mycost;
-            CD = mycd;
             overlappable = overlap;
+            relProb = relativeProb;
         }
     }
 
@@ -35,19 +36,20 @@ public class Sabotages : MonoBehaviour
     // Sabotage costs and durations
     // Sabotage(name, duration, cost, cd, overlappable)
     public static List<Sabotage> sabVars = new List<Sabotage>();
-       
+
+    // Sabotage probabilites
+    private static List<int> sabProbs = new List<int>();
 
     void Start()
     {
 
-        sabVars.Add(new Sabotage("Big ", 5, 1, 5, false));
-        sabVars.Add(new Sabotage("Grey", 5, 1, 5, false));
-        sabVars.Add(new Sabotage("Grav", 5, 1, 5, false));
-        sabVars.Add(new Sabotage("Ctrl", 5, 1, 5, false));
-        sabVars.Add(new Sabotage("Bncy", 5, 1, 5, false));
-        sabVars.Add(new Sabotage("Stop", 3, 1, 5, false));
-        sabVars.Add(new Sabotage("Frwd", 3, 1, 5, false));
-        sabVars.Add(new Sabotage("Lockout", 3, 1, 3, false));
+        sabVars.Add(new Sabotage("Big ", 5, 1, false, 1));
+        sabVars.Add(new Sabotage("Grey", 5, 1, false, 1));
+        sabVars.Add(new Sabotage("Grav", 5, 1, false, 1));
+        sabVars.Add(new Sabotage("Ctrl", 5, 1, false, 1));
+        sabVars.Add(new Sabotage("Bncy", 5, 1, false, 1));
+        sabVars.Add(new Sabotage("Stop", 3, 1, false, 1));
+        sabVars.Add(new Sabotage("Frwd", 3, 1, false, 1));
 
         // Initialize control lists
         for (int i = 0; i < sabVars.Count; i++)
@@ -58,16 +60,26 @@ public class Sabotages : MonoBehaviour
             // Usage
             sabotageInUse.Add(false);
 
+            // Probabilities
+            for (int j = 0; j < sabVars[i].relProb; j++)
+            {
+                sabProbs.Add(i);
+            }
         }
+
     }
 
-    public static bool ApplySabotage(int sabTriggered, Player callingPlayer)
+    public static int GrantSabotage()
+    {
+        int sabotageClaimedIndex = UnityEngine.Random.Range((int)0, (int)sabProbs.Count);
+        return sabProbs[sabotageClaimedIndex];
+    }
+
+    public static void ApplySabotage(int sabTriggered, Player callingPlayer)
     {
 
-        if (callingPlayer.bank >= sabVars[sabTriggered].cost && (sabVars[sabTriggered].overlappable || !sabotageInUse[sabTriggered]))
+        if ((sabVars[sabTriggered].overlappable || !sabotageInUse[sabTriggered]))
         {
-
-            callingPlayer.bank -= sabVars[sabTriggered].cost;
 
             // Makes other players bigger and slower
             if (sabTriggered == 0)
@@ -150,22 +162,17 @@ public class Sabotages : MonoBehaviour
                 {
                     if (p.transform.position.x > furthest.transform.position.x) furthest = p;
                 }
-                Vector3 temp = furthest.transform.position;
-                furthest.transform.position = callingPlayer.transform.position;
-                callingPlayer.transform.position = temp;
-                furthest.outline.color = callingPlayer.sprite.color;
+                callingPlayer.transform.position = furthest.transform.position;
             }
 
 
             // Sabotage succesfully used
             sabotageInUse[sabTriggered] = true;
-            return true;
         }
 
         else
         {
             // Sabotage failed to use
-            return false;
         }
     }
 

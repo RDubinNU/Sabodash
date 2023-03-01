@@ -126,7 +126,7 @@ public class GameState : MonoBehaviour
             }
         }
 
-        if (readyToStart == true && alivePlayers.Count > 1)
+        if (readyToStart == true && alivePlayers.Count > 0)
         {
             gameStarted = true;
         }
@@ -135,7 +135,7 @@ public class GameState : MonoBehaviour
 
     void checkForReset()
     {
-        if (alivePlayers.Count <= 1 && gameStarted)
+        if (alivePlayers.Count <= 0 && gameStarted)
         {
             Reset();
         }
@@ -143,12 +143,18 @@ public class GameState : MonoBehaviour
 
     private void Reset()
     {
-        gameStarted = false;
+        resetGameState();
         creditWinningPlayer();
         ResetCamera();
         ResetLevel();
         ResetPlayers();
         ResetSabotages();
+    }
+
+    void resetGameState()
+    {
+        gameStarted = false;
+        gameSpeed = 1;
     }
 
     void creditWinningPlayer()
@@ -171,7 +177,8 @@ public class GameState : MonoBehaviour
         foreach (Player p in deadPlayers)
         {
             p.ready = false;
-            p.bank = 0;
+            p.sabSelected = -1;
+            p.rigbod.gravityScale = p.defaultGravity;
             resetPlayerToLobby(p);
             alivePlayers.Add(p);
         }
@@ -210,14 +217,6 @@ public class GameState : MonoBehaviour
         
         foreach (Player p in alivePlayers)
         {
-            // Tick reset cooldowns
-            for (int i = 0; i < p.playerSabotageCooldowns.Count; i++)
-            {
-                if (p.playerSabotageCooldowns[i] > 0)
-                {
-                    p.playerSabotageCooldowns[i] = 0;
-                }
-            }
 
             // Tick reset durations
             for (int i = 0; i < p.playerSabotageDurs.Count; i++)
