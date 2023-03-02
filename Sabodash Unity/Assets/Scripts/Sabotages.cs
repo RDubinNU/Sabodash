@@ -5,20 +5,17 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Sabotages : MonoBehaviour
-{
+public class Sabotages : MonoBehaviour {
     // Start is called before the first frame update
 
-    public struct Sabotage
-    {
+    public struct Sabotage {
         public String name;
         public int dur;
         public int cost;
         public bool overlappable;
         public int relProb;
 
-        public Sabotage(String newname, int duration, int mycost, bool overlap, int relativeProb)
-        {
+        public Sabotage(String newname, int duration, int mycost, bool overlap, int relativeProb) {
             name = newname;
             dur = duration;
             cost = mycost;
@@ -31,7 +28,7 @@ public class Sabotages : MonoBehaviour
     private static List<bool> sabotageInUse = new List<bool>();
 
     private static float embiggenScale = 1.5f;
-    public static List<String> sabNamesList = new List<String>(); 
+    public static List<String> sabNamesList = new List<String>();
 
     // Sabotage costs and durations
     // Sabotage(name, duration, cost, cd, overlappable)
@@ -40,8 +37,7 @@ public class Sabotages : MonoBehaviour
     // Sabotage probabilites
     private static List<int> sabProbs = new List<int>();
 
-    void Start()
-    {
+    void Start() {
 
         sabVars.Add(new Sabotage("Big ", 5, 1, false, 1));
         sabVars.Add(new Sabotage("Grey", 5, 1, false, 1));
@@ -52,8 +48,7 @@ public class Sabotages : MonoBehaviour
         sabVars.Add(new Sabotage("Frwd", 3, 1, false, 1));
 
         // Initialize control lists
-        for (int i = 0; i < sabVars.Count; i++)
-        {
+        for (int i = 0; i < sabVars.Count; i++) {
             // Add to names
             sabNamesList.Add(sabVars[i].name);
 
@@ -61,224 +56,66 @@ public class Sabotages : MonoBehaviour
             sabotageInUse.Add(false);
 
             // Probabilities
-            for (int j = 0; j < sabVars[i].relProb; j++)
-            {
+            for (int j = 0; j < sabVars[i].relProb; j++) {
                 sabProbs.Add(i);
             }
         }
 
     }
 
-    public static int GrantSabotage()
-    {
+    public static int GrantSabotage() {
         int sabotageClaimedIndex = UnityEngine.Random.Range((int)0, (int)sabProbs.Count);
         return sabProbs[sabotageClaimedIndex];
     }
 
-    public static void ApplySabotage(int sabTriggered, Player callingPlayer)
-    {
-
-        if ((sabVars[sabTriggered].overlappable || !sabotageInUse[sabTriggered]))
-        {
-
-            // Makes other players bigger and slower
-            if (sabTriggered == 0)
-            {
-                foreach (Player p in GameState.alivePlayers)
-                {
-                    if (p != callingPlayer)
-                    {
-                        p.gameObject.transform.localScale *= embiggenScale;
+    public static void ApplySabotage(int sabTriggered, Player callingPlayer) {
+        if ((sabVars[sabTriggered].overlappable || !sabotageInUse[sabTriggered])) {
+            Player furthest = callingPlayer;
+            foreach (Player p in GameState.alivePlayers) {
+                if (p != callingPlayer && sabTriggered != 6) {
+                    if (sabTriggered == 0) {// Makes other players bigger and slower
+                        p.gameObject.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f) * embiggenScale;
                         p.sab_vel_percent = 0.5f;
-                        p.outline.color = callingPlayer.sprite.color;
                     }
+                    if (sabTriggered == 1) { p.sprite.color = Color.gray; }
+                    if (sabTriggered == 2) { p.rigbod.gravityScale = -1 * Mathf.Abs(p.rigbod.gravityScale); }
+                    if (sabTriggered == 3) { p.directionScale *= -1; }
+                    if (sabTriggered == 4) { p.boxcollider.sharedMaterial = p.mat_bouncy; }
+                    if (sabTriggered == 5) { p.sab_vel_percent = 0f; }
+                    p.outline.color = callingPlayer.sprite.color;
                 }
+                else if (p.transform.position.x > furthest.transform.position.x) furthest = p;
             }
-            // Makes other players gray
-            else if (sabTriggered == 1)
-            {
-                foreach (Player p in GameState.alivePlayers)
-                {
-                    if (p != callingPlayer)
-                    {
-                        p.sprite.color = Color.gray;
-                        p.outline.color = callingPlayer.sprite.color;
-                    }
-                }
-            }
-            // Reverse gravity
-            else if (sabTriggered == 2)
-            {
-                foreach (Player p in GameState.alivePlayers)
-                {
-                    if (p != callingPlayer)
-                    {
-                        p.rigbod.gravityScale *= -1;
-                        p.outline.color = callingPlayer.sprite.color;
-                    }
-                }
-            }
-            // Reverse controls
-            else if (sabTriggered == 3)
-            {
-                foreach (Player p in GameState.alivePlayers)
-                {
-                    if (p != callingPlayer)
-                    {
-                        p.directionScale *= -1;
-                        p.outline.color = callingPlayer.sprite.color;
-                    }
-                }
-            }
-            // Bouncy
-            else if (sabTriggered == 4)
-            {
-                foreach (Player p in GameState.alivePlayers)
-                {
-                    if (p != callingPlayer)
-                    {
-                        p.boxcollider.sharedMaterial = p.mat_bouncy;
-                        p.outline.color = callingPlayer.sprite.color;
-                    }
-                }
-            }
-
-            // Stop
-            else if (sabTriggered == 5)
-            {
-                foreach (Player p in GameState.alivePlayers)
-                {
-                    if (p != callingPlayer)
-                    {
-                        p.sab_vel_percent = 0f;
-                        p.outline.color = callingPlayer.sprite.color;
-                    }
-                }
-            }
-            else if (sabTriggered == 6)
-            {
-                Player furthest = callingPlayer;
-                foreach (Player p in GameState.alivePlayers)
-                {
-                    if (p.transform.position.x > furthest.transform.position.x) furthest = p;
-                }
-                callingPlayer.transform.position = furthest.transform.position;
-            }
-
-
+            if(sabTriggered == 6) callingPlayer.transform.position = furthest.transform.position;
             // Sabotage succesfully used
             sabotageInUse[sabTriggered] = true;
         }
 
-        else
-        {
+        else {
             // Sabotage failed to use
         }
     }
-
-    public static void ResetSabotage(int sabNumber, Player player)
-    {
+    public static void ResetSabotage(int sabNumber, Player player) {
         // Reset only applied sabotage
-
-        if (sabNumber == 0)
-        {
-            foreach (Player p in GameState.alivePlayers)
-            {
-                if (p != player)
-                {
-                    p.gameObject.transform.localScale *= (1 / embiggenScale);
-                    p.sab_vel_percent = 1f;
-                    p.outline.color = Color.black;
-                }
+        foreach (Player p in FindObjectsOfType<Player>()) {
+            if (sabNumber == 0) {
+                p.gameObject.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f); ;
+                p.sab_vel_percent = 1f;
             }
+            if (sabNumber == 1) { p.sprite.color = GameState.possibleColours[p.colourIndex]; }
+            if (sabNumber == 2) { p.rigbod.gravityScale = Mathf.Abs(p.rigbod.gravityScale); }
+            if (sabNumber == 3) { p.directionScale = Mathf.Abs(p.directionScale); }
+            if (sabNumber == 4) { p.boxcollider.sharedMaterial = p.mat_normal; }
+            if (sabNumber == 5) { p.sab_vel_percent = 1f; }
+            if (sabNumber == 6) { }
+            if (sabNumber == 7) { }
+            p.outline.color = Color.black;
         }
-        else if (sabNumber == 1)
-        {
-            foreach (Player p in GameState.alivePlayers)
-            {
-                if (p != player)
-                {
-                    p.sprite.color = GameState.possibleColours[p.colourIndex];
-                    p.outline.color = Color.black;
-                }
-            }
-        }
-        else if (sabNumber == 2)
-        {
-            foreach (Player p in GameState.alivePlayers)
-            {
-                if (p != player)
-                {
-                    p.rigbod.gravityScale *= -1;
-                    p.outline.color = Color.black;
-                }
-            }
-        }
-        else if (sabNumber == 3)
-        {
-            foreach (Player p in GameState.alivePlayers)
-            {
-                if (p != player)
-                {
-                    p.directionScale *= -1;
-                    p.outline.color = Color.black;
-                }
-            }
-        }
-
-        else if (sabNumber == 4)
-        {
-            foreach (Player p in GameState.alivePlayers)
-            {
-                if (p != player)
-                {
-                    p.boxcollider.sharedMaterial = p.mat_normal;
-                    p.outline.color = Color.black;
-                }
-            }
-        }
-
-        else if (sabNumber == 5)
-        {
-            foreach (Player p in GameState.alivePlayers)
-            {
-                if (p != player)
-                {
-                    p.sab_vel_percent = 1f;
-                    p.outline.color = Color.black;
-                }
-            }
-        }
-        else if (sabNumber == 6)
-        {
-            foreach (Player p in GameState.alivePlayers)
-            {
-                if (p != player)
-                {
-                    p.outline.color = Color.black;
-                }
-            }
-        }
-
-        else if (sabNumber == 7)
-        {
-            foreach (Player p in GameState.alivePlayers)
-            {
-                if (p != player)
-                {
-                    // Reset handled by sabotage ticking
-                    p.outline.color = Color.black;
-                }
-            }
-        }
-
         sabotageInUse[sabNumber] = false;
-
     }
 
     // Update is called once per frame
-    void Update()
-    {
+    void Update() {
 
     }
 }

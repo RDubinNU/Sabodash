@@ -8,9 +8,14 @@ using Unity.VisualScripting;
 
 public class GameState : MonoBehaviour
 {
+    //Debug Variables
+    public int playersNeededToStart = 2;
+    public static float scrollSpeed = 0.05f;
+
     // State Variables
     public static float gameSpeed = 1;
     public static bool gameStarted = false;
+    public static Color lastWinnerColor = Color.white;
 
     // Player Tracking
     public static List<Player> alivePlayers = new List<Player>();
@@ -30,6 +35,8 @@ public class GameState : MonoBehaviour
     void Start()
     {
 
+
+        playersNeededToStart = 2;
         mainCamera = FindObjectOfType<Camera>();
         cameraStartingPos = mainCamera.transform.position;
 
@@ -53,7 +60,9 @@ public class GameState : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-
+        Debug.Log(playersNeededToStart);
+        Debug.Log(alivePlayers.Count);
+        Debug.Log("_");
         if (gameStarted)
         {
             checkForReset();
@@ -61,9 +70,6 @@ public class GameState : MonoBehaviour
         {
             checkForGameStart();
         }
-
-        
-
     }
 
     static public void AddPlayer(Player player)
@@ -126,7 +132,7 @@ public class GameState : MonoBehaviour
             }
         }
 
-        if (readyToStart == true && alivePlayers.Count > 1)
+        if (readyToStart == true && alivePlayers.Count >= playersNeededToStart)
         {
             gameStarted = true;
         }
@@ -135,7 +141,7 @@ public class GameState : MonoBehaviour
 
     void checkForReset()
     {
-        if (alivePlayers.Count <= 1 && gameStarted)
+        if (alivePlayers.Count < playersNeededToStart && gameStarted)
         {
             Reset();
         }
@@ -149,14 +155,13 @@ public class GameState : MonoBehaviour
         ResetLevel();
         ResetPlayers();
         ResetSabotages();
+        ResetAllSabotages();
     }
-
     void resetGameState()
     {
         gameStarted = false;
         gameSpeed = 1;
     }
-
     void creditWinningPlayer()
     {
 
@@ -165,11 +170,13 @@ public class GameState : MonoBehaviour
         {
             p.playerWins += 1;
             deadPlayers.Add(p);
+            lastWinnerColor = possibleColours[p.colourIndex];
         }
         alivePlayers.Clear();
     }
-
-
+    void ResetCamera() {
+        mainCamera.transform.position = cameraStartingPos;
+    }
     void ResetPlayers()
     {
         // Reset players
@@ -185,14 +192,10 @@ public class GameState : MonoBehaviour
 
         deadPlayers.Clear();
     }
-    
-   
-
     static void resetPlayerToLobby(Player player)
     {
         player.rigbod.position = player.spawnPoint;
     }
-
     void ResetLevel()
     {
         // Reset level
@@ -207,12 +210,6 @@ public class GameState : MonoBehaviour
         generator.latestSectionEndPos = generator.Lobby.Find("SectionEnd").position;
         generator.SpawnLevelSection();
     }
-
-    void ResetCamera()
-    {
-        mainCamera.transform.position = cameraStartingPos;
-    }
-
     void ResetSabotages() {
         
         foreach (Player p in alivePlayers)
@@ -232,5 +229,18 @@ public class GameState : MonoBehaviour
             
         }
 
+    }
+    public static void ResetAllSabotages() {
+        // Reset only applied sabotage
+        foreach (Player p in FindObjectsOfType<Player>()) {
+            p.gameObject.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f); ;
+            p.sab_vel_percent = 1f;
+            p.sprite.color = GameState.possibleColours[p.colourIndex];
+            p.rigbod.gravityScale = Mathf.Abs(p.rigbod.gravityScale);
+            p.directionScale = Mathf.Abs(p.directionScale);
+            p.boxcollider.sharedMaterial = p.mat_normal;
+            p.sab_vel_percent = 1f;
+            p.outline.color = Color.black;
+        }
     }
 }

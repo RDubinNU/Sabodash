@@ -57,15 +57,17 @@ public class Player : MonoBehaviour
     public BoxCollider2D boxcollider;
     public SpriteRenderer sprite;
     public SpriteRenderer outline;
+    public SpriteRenderer sabDisplay;
     private bool grounded;
     public int sabSelected = -1;
 
     // HUD
     public GameObject textPrefab;
     public GameObject sab_txt;
+    public GameObject icon_prefab;
+    public GameObject sab_icon;
 
     public Vector3 spawnPoint = new Vector3(0, 0, 0);
-
 
     private bool triggerDown = false;
     public List<float> playerSabotageDurs = new List<float>();
@@ -96,12 +98,14 @@ public class Player : MonoBehaviour
         foreach(SpriteRenderer spr in sprites)
         {
             if (spr.CompareTag("Outline")) outline = spr;
+            if (spr.CompareTag("SabDisplay")) sabDisplay = spr;
         }
         updatePlayerColour(1);
 
         // HUD Instantiation
         sab_txt = Instantiate(textPrefab, transform.position, Quaternion.identity);
         sab_txt.GetComponent<TextMeshPro>().text = "";
+        sab_icon = Instantiate(icon_prefab, transform.position, Quaternion.identity);
 
         // Sabotage instantiation
         for (int i = 0; i < Sabotages.sabVars.Count; i++)
@@ -304,14 +308,17 @@ public class Player : MonoBehaviour
         {
             // Display updates while running
             sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
-            
+            sab_icon.transform.position = new Vector2(transform.position.x, transform.position.y + 1f);
+
             // Display held sabotage if you have one
             if (sabSelected != -1)
             {
                 sab_txt.GetComponent<TextMeshPro>().text = Sabotages.sabNamesList[sabSelected];
+                sab_icon.GetComponent<SabSprites>().currentSprite = -1;
             } else
             {
                 sab_txt.GetComponent<TextMeshPro>().text = "";
+                sab_icon.GetComponent<SabSprites>().currentSprite = sabSelected;
             }
         }
         else
@@ -322,7 +329,7 @@ public class Player : MonoBehaviour
             {
                 sab_txt.GetComponent<TextMeshPro>().text = "Ready!";
             }
-            else sab_txt.GetComponent<TextMeshPro>().text = "";
+            else sab_txt.GetComponent<TextMeshPro>().text = "Wins:" + playerWins;
         }
     }
 
