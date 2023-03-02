@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3963664515595247550}
   - component: {fileID: 8221915141031099293}
   - component: {fileID: 7392674625031826199}
+  - component: {fileID: -7231995079416392818}
   m_Layer: 0
   m_Name: Coin
   m_TagString: Coin
@@ -115,3 +116,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   probability: 3
+--- !u!114 &-7231995079416392818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3730909949509032150}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d3467e142e6d474cbdecde0d848b713, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprite: {fileID: 0}
+  hue: 0
