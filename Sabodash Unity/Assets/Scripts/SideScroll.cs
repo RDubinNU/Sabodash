@@ -5,7 +5,7 @@ using UnityEngine;
 public class SideScroll : MonoBehaviour
 {
     // Start is called before the first frame update
-    private float scrollAmount = 0.005f;
+    private float scrollAmount = GameState.scrollSpeed;
     void Start()
     {
 
@@ -17,7 +17,7 @@ public class SideScroll : MonoBehaviour
 
         if (GameState.gameStarted)
         {
-            transform.position = new Vector3(transform.position.x + scrollAmount, transform.position.y, transform.position.z);
+            transform.position = new Vector3(transform.position.x + (scrollAmount) * GameState.gameSpeed, transform.position.y, transform.position.z);
         }
     }
 

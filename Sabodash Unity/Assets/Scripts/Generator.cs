@@ -19,6 +19,8 @@ public class Generator : MonoBehaviour
 
     public List<Transform> renderedSections = new List<Transform>();
 
+    private bool firstSpawn = true;
+
     private void Awake()
     {
         string[] assetsPaths = AssetDatabase.GetAllAssetPaths();
@@ -45,6 +47,7 @@ public class Generator : MonoBehaviour
     {
         if (Vector3.Distance(cam.GetComponent<Transform>().position, latestSectionEndPos) < GENERATION_DIST)
         {
+
             // Spawn new section
             SpawnLevelSection();
 
@@ -66,7 +69,14 @@ public class Generator : MonoBehaviour
         latestSectionEndPos = latestSectionTransform.Find("SectionEnd").position;
 
         // Update game speed
-        GameState.gameSpeed *= 1.05f;
+        if (!firstSpawn)
+        {
+            GameState.gameSpeed *= 1.05f;
+        } else
+        {
+            firstSpawn = false;
+        }
+        
     }
         
 

@@ -42,8 +42,8 @@ public class Player : MonoBehaviour
     float fly_delay = 0.2f;
     float jump_cd = 0.1f;
 
-    float cur_game_speed;
-    float defaultGravity = 2;
+    float cur_game_speed = 1f;
+    public float defaultGravity = 2;
 
     //Variables for Bouncy Sabotage (4)
     public PhysicsMaterial2D mat_normal;
@@ -57,18 +57,19 @@ public class Player : MonoBehaviour
     public BoxCollider2D boxcollider;
     public SpriteRenderer sprite;
     public SpriteRenderer outline;
+    public SpriteRenderer sabDisplay;
     private bool grounded;
-    public int bank = 0;
+    public int sabSelected = -1;
+
+    // HUD
     public GameObject textPrefab;
-    public GameObject bank_txt;
     public GameObject sab_txt;
+    public GameObject icon_prefab;
+    public GameObject sab_icon;
 
     public Vector3 spawnPoint = new Vector3(0, 0, 0);
 
-    private int sabSelected = 0;
     private bool triggerDown = false;
-
-    public List<float> playerSabotageCooldowns = new List<float>();
     public List<float> playerSabotageDurs = new List<float>();
     private const int GENERAL_SABOTAGE_CD_DUR = 3;
     public float playerGeneralSabCD = 0;
@@ -97,26 +98,23 @@ public class Player : MonoBehaviour
         foreach(SpriteRenderer spr in sprites)
         {
             if (spr.CompareTag("Outline")) outline = spr;
+            if (spr.CompareTag("SabDisplay")) sabDisplay = spr;
         }
         updatePlayerColour(1);
 
         // HUD Instantiation
-        bank_txt = Instantiate(textPrefab, transform.position, Quaternion.identity);
-        bank_txt.GetComponent<TextMeshPro>().text = "";
         sab_txt = Instantiate(textPrefab, transform.position, Quaternion.identity);
         sab_txt.GetComponent<TextMeshPro>().text = "";
+        sab_icon = Instantiate(icon_prefab, transform.position, Quaternion.identity);
 
         // Sabotage instantiation
         for (int i = 0; i < Sabotages.sabVars.Count; i++)
         {
-            playerSabotageCooldowns.Add(0);
             playerSabotageDurs.Add(-1);
         }
 
         // Game state control
         GameState.AddPlayer(this);
-        cur_game_speed = GameState.gameSpeed;
-
     }
 
     private void Update()
@@ -142,27 +140,7 @@ public class Player : MonoBehaviour
     }
     void parseTriggers()
     {
-        if (GameState.gameStarted)
-        {
-            // Sabotage Handling
-            if (triggers.ReadValue<float>() > 0 && !triggerDown)
-            {
-                sabSelected++;
-                triggerDown = true;
-            }
-            else if (triggers.ReadValue<float>() < 0 && !triggerDown)
-            {
-                sabSelected--;
-                triggerDown = true;
-            }
-            else if (triggers.ReadValue<float>() == 0)
-            {
-                triggerDown = false;
-            }
-            if (sabSelected > Sabotages.sabVars.Count - 1) sabSelected = 0;
-            if (sabSelected < 0) sabSelected = Sabotages.sabVars.Count - 1;
-        }
-        else
+        if (!GameState.gameStarted)
         {
             // Colour Selection
             if (triggers.ReadValue<float>() > 0 && !triggerDown)
@@ -219,8 +197,8 @@ public class Player : MonoBehaviour
         // Horizontal acceleration control
         float accel_x = lr.ReadValue<float>();
 
-        accel_x = accel_x * horizontal_accel_speed * directionScale;
-        if (Math.Abs(rigbod.velocity.x + accel_x) > maxvel_x * sab_vel_percent)
+        accel_x = accel_x * horizontal_accel_speed * directionScale * GameState.gameSpeed;
+        if (Math.Abs(rigbod.velocity.x + accel_x) > maxvel_x * sab_vel_percent * GameState.gameSpeed)
         {
             accel_x = 0; // Clipping acceleration vs velocity allows fun side sliding on slanted surfaces
         }
@@ -230,14 +208,14 @@ public class Player : MonoBehaviour
 
         if (jump.ReadValue<float>() > 0)
         {
-            if (grounded & Time.time > last_jump + jump_cd)
+            if (grounded & Time.time > last_jump + (1 / GameState.gameSpeed) * jump_cd)
             {
-                accel_y = jumpstrength * Math.Sign(rigbod.gravityScale);
+                accel_y = jumpstrength * Math.Sign(rigbod.gravityScale) * (float)Math.Sqrt(GameState.gameSpeed);
                 last_jump = Time.time;
             }
-            else if ((Time.time > last_jump + fly_delay))
+            else if ((Time.time > last_jump + (1/GameState.gameSpeed) * fly_delay))
             {
-                accel_y = fly_accel * Math.Sign(rigbod.gravityScale);
+                accel_y = fly_accel * Math.Sign(rigbod.gravityScale) * GameState.gameSpeed;
             }
         }
 
@@ -248,15 +226,15 @@ public class Player : MonoBehaviour
 
         // Fly Capping
 
-        if (rigbod.velocity.y >= maxvel_y && rigbod.gravityScale > 0)
+        if (rigbod.velocity.y >= maxvel_y * GameState.gameSpeed && rigbod.gravityScale > 0)
         {
             rigbod.velocity = new Vector2(rigbod.velocity.x,
-                                            maxvel_y);
+                                            maxvel_y * GameState.gameSpeed);
         }
-        else if ((rigbod.velocity.y <= -maxvel_y) && rigbod.gravityScale < 0)
+        else if (rigbod.velocity.y * GameState.gameSpeed <= maxvel_y && rigbod.gravityScale < 0)
         {
             rigbod.velocity = new Vector2(rigbod.velocity.x,
-                                            -maxvel_y);
+                                            -maxvel_y * GameState.gameSpeed);
         }
 
 
@@ -286,17 +264,17 @@ public class Player : MonoBehaviour
 
     void AttemptSabotageUse()
     {
-        if (playerSabotageCooldowns[sabSelected] == 0 && playerGeneralSabCD == 0)
+        if (playerGeneralSabCD == 0 && sabSelected != -1)
         {
-            bool applied = Sabotages.ApplySabotage(sabSelected, this);
+            Sabotages.ApplySabotage(sabSelected, this);
+            
+            // Update CDs
+            playerSabotageDurs[sabSelected] = Sabotages.sabVars[sabSelected].dur;
+            playerGeneralSabCD = GENERAL_SABOTAGE_CD_DUR;
 
-            if (applied)
-            {
-                // Update CDs
-                playerSabotageCooldowns[sabSelected] = Sabotages.sabVars[sabSelected].CD;
-                playerSabotageDurs[sabSelected] = Sabotages.sabVars[sabSelected].dur;
-                playerGeneralSabCD = GENERAL_SABOTAGE_CD_DUR;
-            }
+            // Remove sabotage from player
+            sabSelected = -1;
+
         }
     }
 
@@ -310,28 +288,51 @@ public class Player : MonoBehaviour
     void OnTriggerEnter2D(Collider2D col)
     {
         if(col.tag == "Coin") {
-            Destroy(col.gameObject);
-            bank++;
+
+            if (sabSelected == -1)
+            {
+                Destroy(col.gameObject);
+                sabSelected = Sabotages.GrantSabotage();
+            } else
+            {
+                Destroy(col.gameObject);
+            }
+            
         }
     }
 
     void updateHUD()
     {
 
+        sab_icon.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
         if (GameState.gameStarted)
         {
-            // Display Updates
-            bank_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
-            bank_txt.GetComponent<TextMeshPro>().text = bank.ToString();
-            sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.75f);
-            sab_txt.GetComponent<TextMeshPro>().text = Sabotages.sabNamesList[sabSelected];
+            // Display updates while running
+            sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
+
+            // Display held sabotage if you have one
+            if (sabSelected != -1)
+            {
+                //sab_txt.GetComponent<TextMeshPro>().text = Sabotages.sabNamesList[sabSelected];
+                sab_icon.GetComponent<SabSprites>().currentSprite = sabSelected;
+            } else
+            {
+                sab_txt.GetComponent<TextMeshPro>().text = "";
+                sab_icon.GetComponent<SabSprites>().currentSprite = -1;
+            }
         }
         else
         {
-            bank_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
-            if (ready) bank_txt.GetComponent<TextMeshPro>().text = "Ready!";
-            else bank_txt.GetComponent<TextMeshPro>().text = "";
-            sab_txt.GetComponent<TextMeshPro>().text = "";
+            // Display updates for lobby
+            sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
+            if(sab_icon.GetComponent<SabSprites>().currentSprite == -2) {
+                sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.75f);
+            }
+            if (ready)
+            {
+                sab_txt.GetComponent<TextMeshPro>().text = "Ready!";
+            }
+            else sab_txt.GetComponent<TextMeshPro>().text = "Wins:" + playerWins;
         }
     }
 
@@ -350,14 +351,7 @@ public class Player : MonoBehaviour
         for (int i = 0; i < playerSabotageDurs.Count; i++)
         {
             // Tick timers
-            playerSabotageCooldowns[i] -= Time.fixedDeltaTime;
             playerSabotageDurs[i] -= Time.fixedDeltaTime;
-
-            // Update Cooldowns
-            if (playerSabotageCooldowns[i] < 0)
-            {
-                playerSabotageCooldowns[i] = 0;
-            }
 
             // Update durations and reset
             if (playerSabotageDurs[i] < 0 && playerSabotageDurs[i] > -1)

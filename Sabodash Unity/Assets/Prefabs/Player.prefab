@@ -363,7 +363,7 @@ Rigidbody2D:
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 1
+  m_CollisionDetection: 0
   m_Constraints: 0
 --- !u!61 &-2994012845564952420
 BoxCollider2D:
@@ -407,6 +407,7 @@ MonoBehaviour:
   colourIndex: -1
   playerWins: 0
   ready: 0
+  defaultGravity: 2
   mat_normal: {fileID: 6200000, guid: 87b70404d4ecc354695d4a06e7c46787, type: 2}
   mat_bouncy: {fileID: 6200000, guid: ee184e8f58249df4592bf2a949059c29, type: 2}
   sab_vel_percent: 1
@@ -414,12 +415,13 @@ MonoBehaviour:
   boxcollider: {fileID: 0}
   sprite: {fileID: 0}
   outline: {fileID: 0}
-  bank: 10
+  sabDisplay: {fileID: 0}
+  sabSelected: -1
   textPrefab: {fileID: 8266491290818602519, guid: a22d5385ab4d64d4bb8c9335d42f1763, type: 3}
-  bank_txt: {fileID: 0}
   sab_txt: {fileID: 0}
+  icon_prefab: {fileID: 6564120281761800626, guid: cff66a73f7820f64190ca07ac1a2fde8, type: 3}
+  sab_icon: {fileID: 0}
   spawnPoint: {x: 0, y: 0, z: 0}
-  playerSabotageCooldowns: []
   playerSabotageDurs: []
   playerGeneralSabCD: 0
   directionScale: 1
