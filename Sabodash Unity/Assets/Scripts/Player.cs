@@ -308,18 +308,19 @@ public class Player : MonoBehaviour
         {
             // Display updates while running
             sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
-            sab_icon.transform.position = new Vector2(transform.position.x, transform.position.y + 1f);
+            sab_icon.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
 
             // Display held sabotage if you have one
             if (sabSelected != -1)
             {
-                sab_txt.GetComponent<TextMeshPro>().text = Sabotages.sabNamesList[sabSelected];
-                sab_icon.GetComponent<SabSprites>().currentSprite = -1;
+                //sab_txt.GetComponent<TextMeshPro>().text = Sabotages.sabNamesList[sabSelected];
+                sab_icon.GetComponent<SabSprites>().currentSprite = sabSelected;
             } else
             {
                 sab_txt.GetComponent<TextMeshPro>().text = "";
-                sab_icon.GetComponent<SabSprites>().currentSprite = sabSelected;
+                sab_icon.GetComponent<SabSprites>().currentSprite = -1;
             }
+            Debug.Log("Current sab:" + sabSelected);
         }
         else
         {

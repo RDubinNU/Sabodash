@@ -60,9 +60,6 @@ public class GameState : MonoBehaviour
     // Update is called once per frame
     void LateUpdate()
     {
-        Debug.Log(playersNeededToStart);
-        Debug.Log(alivePlayers.Count);
-        Debug.Log("_");
         if (gameStarted)
         {
             checkForReset();
