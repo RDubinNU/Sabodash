@@ -304,11 +304,11 @@ public class Player : MonoBehaviour
     void updateHUD()
     {
 
+        sab_icon.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
         if (GameState.gameStarted)
         {
             // Display updates while running
             sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
-            sab_icon.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
 
             // Display held sabotage if you have one
             if (sabSelected != -1)
@@ -320,12 +320,14 @@ public class Player : MonoBehaviour
                 sab_txt.GetComponent<TextMeshPro>().text = "";
                 sab_icon.GetComponent<SabSprites>().currentSprite = -1;
             }
-            Debug.Log("Current sab:" + sabSelected);
         }
         else
         {
             // Display updates for lobby
             sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
+            if(sab_icon.GetComponent<SabSprites>().currentSprite == -2) {
+                sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.75f);
+            }
             if (ready)
             {
                 sab_txt.GetComponent<TextMeshPro>().text = "Ready!";

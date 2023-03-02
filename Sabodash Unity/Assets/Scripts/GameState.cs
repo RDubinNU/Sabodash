@@ -16,6 +16,7 @@ public class GameState : MonoBehaviour
     public static float gameSpeed = 1;
     public static bool gameStarted = false;
     public static Color lastWinnerColor = Color.white;
+    public static Player overallWinner = null;
 
     // Player Tracking
     public static List<Player> alivePlayers = new List<Player>();
@@ -34,8 +35,6 @@ public class GameState : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
-
         playersNeededToStart = 2;
         mainCamera = FindObjectOfType<Camera>();
         cameraStartingPos = mainCamera.transform.position;
@@ -153,6 +152,7 @@ public class GameState : MonoBehaviour
         ResetPlayers();
         ResetSabotages();
         ResetAllSabotages();
+        GiveCrown();
     }
     void resetGameState()
     {
@@ -238,6 +238,17 @@ public class GameState : MonoBehaviour
             p.boxcollider.sharedMaterial = p.mat_normal;
             p.sab_vel_percent = 1f;
             p.outline.color = Color.black;
+        }
+    }
+
+    public void GiveCrown() {
+        int highscore = 0;
+        foreach (Player p in FindObjectsOfType<Player>()) {
+            p.sab_icon.GetComponent<SabSprites>().currentSprite = -1;
+            if (p.playerWins > highscore) highscore = p.playerWins;
+        }
+        foreach (Player p in FindObjectsOfType<Player>()) {
+            if (p.playerWins == highscore) p.sab_icon.GetComponent<SabSprites>().currentSprite = -2;
         }
     }
 }
