@@ -126,7 +126,7 @@ public class GameState : MonoBehaviour
             }
         }
 
-        if (readyToStart == true && alivePlayers.Count > 0)
+        if (readyToStart == true && alivePlayers.Count > 1)
         {
             gameStarted = true;
         }
@@ -135,7 +135,7 @@ public class GameState : MonoBehaviour
 
     void checkForReset()
     {
-        if (alivePlayers.Count <= 0 && gameStarted)
+        if (alivePlayers.Count <= 1 && gameStarted)
         {
             Reset();
         }
