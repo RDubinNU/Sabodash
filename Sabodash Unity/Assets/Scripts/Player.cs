@@ -254,12 +254,8 @@ public class Player : MonoBehaviour
 
     void updateGravity()
     {
-        // Check for gravity change
-        if (GameState.gameSpeed != cur_game_speed)
-        {
-            rigbod.gravityScale = rigbod.gravityScale * (1 + GameState.gameSpeed - cur_game_speed);
-            cur_game_speed = GameState.gameSpeed;
-        }
+        int cur_grav_sign = Math.Sign(rigbod.gravityScale);
+        rigbod.gravityScale = cur_grav_sign * defaultGravity * GameState.gameSpeed;
     }
     void CheckForSabotageUse()
     {

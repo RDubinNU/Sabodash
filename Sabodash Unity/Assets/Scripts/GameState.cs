@@ -63,6 +63,14 @@ public class GameState : MonoBehaviour
 
     }
 
+    private void Update()
+    {
+        if (counting_down)
+        {
+            UpdateCountdown();
+        }
+    }
+
     // Update is called once per frame
     void LateUpdate()
     {
@@ -73,10 +81,7 @@ public class GameState : MonoBehaviour
         {
             checkForGameStart();
         }
-        if (counting_down)
-        {
-            UpdateCountdown();
-        }
+
     }
 
     static public void AddPlayer(Player player)
@@ -205,7 +210,6 @@ public class GameState : MonoBehaviour
         ResetLevel();
         ResetPlayers();
         ResetSabotages();
-        ResetAllSabotages();
         GiveCrown();
         DestroyCountdown();
     }
@@ -281,19 +285,6 @@ public class GameState : MonoBehaviour
             
         }
 
-    }
-    public static void ResetAllSabotages() {
-        // Reset only applied sabotage
-        foreach (Player p in FindObjectsOfType<Player>()) {
-            p.gameObject.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f); ;
-            p.sab_vel_percent = 1f;
-            p.sprite.color = GameState.possibleColours[p.colourIndex];
-            p.rigbod.gravityScale = Mathf.Abs(p.rigbod.gravityScale);
-            p.directionScale = Mathf.Abs(p.directionScale);
-            p.boxcollider.sharedMaterial = p.mat_normal;
-            p.sab_vel_percent = 1f;
-            p.outline.color = Color.black;
-        }
     }
 
     public void GiveCrown() {
