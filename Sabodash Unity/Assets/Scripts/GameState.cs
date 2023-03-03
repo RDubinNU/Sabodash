@@ -287,6 +287,7 @@ public class GameState : MonoBehaviour
 
     }
 
+
     public void GiveCrown() {
         int highscore = 0;
         foreach (Player p in FindObjectsOfType<Player>()) {

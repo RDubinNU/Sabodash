@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6466459946414656048}
   - component: {fileID: -4934424484394156583}
   - component: {fileID: 3118170936654149958}
+  - component: {fileID: -5186036822540182208}
   m_Layer: 0
   m_Name: SabHUD
   m_TagString: Untagged
@@ -73,7 +74,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 100
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -107,3 +108,17 @@ MonoBehaviour:
   spriteStop: {fileID: 21300000, guid: ced592ff1a554a94a9f0ad7c1b2b8789, type: 3}
   spriteFrwd: {fileID: 21300000, guid: 9e94bf8121caaab48804f9d24dc64cad, type: 3}
   currentSprite: -1
+--- !u!114 &-5186036822540182208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6564120281761800626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d3467e142e6d474cbdecde0d848b713, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sprite: {fileID: 0}
+  hue: 0
