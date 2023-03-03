@@ -228,7 +228,7 @@ public class GameState : MonoBehaviour
 
     }
     public static void ResetAllSabotages() {
-        // Reset only applied sabotage
+        // Reset all sabotage
         foreach (Player p in FindObjectsOfType<Player>()) {
             p.gameObject.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f); ;
             p.sab_vel_percent = 1f;
