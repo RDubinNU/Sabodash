@@ -61,6 +61,8 @@ public class Player : MonoBehaviour
     private bool grounded;
     public int sabSelected = -1;
 
+    public int sabToUse = -1;
+
     // HUD
     public GameObject textPrefab;
     public GameObject sab_txt;
@@ -278,14 +280,11 @@ public class Player : MonoBehaviour
             if(Time.time - sabApplyTime >= 3)
             {
                 //Actually apply the sabotage
-                Sabotages.ApplySabotage(sabSelected, this);
+                Sabotages.ApplySabotage(sabToUse, this);
 
                 // Update CDs
-                playerSabotageDurs[sabSelected] = Sabotages.sabVars[sabSelected].dur;
+                playerSabotageDurs[sabToUse] = Sabotages.sabVars[sabToUse].dur;
                 playerGeneralSabCD = GENERAL_SABOTAGE_CD_DUR;
-
-                // Remove sabotage from player
-                sabSelected = -1;
 
                 //Reset Countdown
                 countingDown = false;
@@ -303,6 +302,12 @@ public class Player : MonoBehaviour
             GameState.DisplayCountdown(this);
             countingDown = true;
             sabApplyTime = Time.time;
+
+            //Sabotage to be used
+            sabToUse = sabSelected;
+
+            //Reset selected sabotage (the one displayed in HUD)
+            sabSelected = -1;
         }
     }
 
@@ -341,14 +346,7 @@ public class Player : MonoBehaviour
             // Display held sabotage if you have one
             if (sabSelected != -1)
             {
-                if (countingDown)
-                {
-                    sab_txt.GetComponent<TextMeshPro>().text = "";
-                    sab_icon.GetComponent<SabSprites>().currentSprite = -1;
-                }
-                else {
-                    sab_icon.GetComponent<SabSprites>().currentSprite = sabSelected;
-                }
+                sab_icon.GetComponent<SabSprites>().currentSprite = sabSelected;
             }
             else
             {

@@ -133,9 +133,9 @@ public class GameState : MonoBehaviour
         startTime = Time.time;
         GameObject icon = p.icon_prefab;
 
-        var pos = mainCamera.transform.position + mainCamera.transform.forward * 10f + new Vector3(0f, 2f, 0f);
+        var pos = mainCamera.transform.position + mainCamera.transform.forward * 10f + new Vector3(0f, 6f, 0f);
         countdownIcon = Instantiate(icon, pos, Quaternion.identity);
-        countdownIcon.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
+        countdownIcon.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
         countdownIcon.GetComponent<SabSprites>().currentSprite = p.sabSelected;
         countdownIcon.GetComponent<SpriteRenderer>().sortingOrder = 1;
     }
@@ -154,7 +154,8 @@ public class GameState : MonoBehaviour
 
     void MakeFlash()
     {
-        if ((Time.time - startTime >= 0.5 && Time.time - startTime <=1) || (Time.time - startTime >= 1.5 && Time.time - startTime <= 2) || (Time.time - startTime >= 2.5 && Time.time - startTime <= 3))
+        float curTime = Time.time - startTime;
+        if ((curTime >= 0.5 && curTime <= 1) || (curTime >= 1.5 && curTime <= 2) || (curTime >= 2.5 && curTime <= 3))
         {
             countdownIcon.GetComponent<SpriteRenderer>().enabled = false;
         }
@@ -206,6 +207,7 @@ public class GameState : MonoBehaviour
         ResetSabotages();
         ResetAllSabotages();
         GiveCrown();
+        DestroyCountdown();
     }
     void resetGameState()
     {
