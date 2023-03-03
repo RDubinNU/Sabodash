@@ -67,6 +67,10 @@ public class Player : MonoBehaviour
     public GameObject icon_prefab;
     public GameObject sab_icon;
 
+    //Sabotage Countdown
+    public bool countingDown = false;
+    public float sabApplyTime;
+
     public Vector3 spawnPoint = new Vector3(0, 0, 0);
 
     private bool triggerDown = false;
@@ -123,6 +127,7 @@ public class Player : MonoBehaviour
         parseTriggers();
         checkReady();
         updateGravity();
+        WaitForCountdown();
     }
 
     void FixedUpdate()
@@ -258,23 +263,46 @@ public class Player : MonoBehaviour
     {
         if (GameState.gameStarted && sabotage.ReadValue<float>() > 0)
         {
-            AttemptSabotageUse();
+            if (!countingDown)
+            {
+                AttemptSabotageUse();
+            }
         }
     }
+
+    void WaitForCountdown()
+    {
+        if (countingDown)
+        {
+            //Wait for countdown
+            if(Time.time - sabApplyTime >= 3)
+            {
+                //Actually apply the sabotage
+                Sabotages.ApplySabotage(sabSelected, this);
+
+                // Update CDs
+                playerSabotageDurs[sabSelected] = Sabotages.sabVars[sabSelected].dur;
+                playerGeneralSabCD = GENERAL_SABOTAGE_CD_DUR;
+
+                // Remove sabotage from player
+                sabSelected = -1;
+
+                //Reset Countdown
+                countingDown = false;
+                GameState.DestroyCountdown();
+            }
+        }
+    }
+
 
     void AttemptSabotageUse()
     {
         if (playerGeneralSabCD == 0 && sabSelected != -1)
         {
-            Sabotages.ApplySabotage(sabSelected, this);
-            
-            // Update CDs
-            playerSabotageDurs[sabSelected] = Sabotages.sabVars[sabSelected].dur;
-            playerGeneralSabCD = GENERAL_SABOTAGE_CD_DUR;
-
-            // Remove sabotage from player
-            sabSelected = -1;
-
+            // Start countdown
+            GameState.DisplayCountdown(this);
+            countingDown = true;
+            sabApplyTime = Time.time;
         }
     }
 
@@ -313,9 +341,16 @@ public class Player : MonoBehaviour
             // Display held sabotage if you have one
             if (sabSelected != -1)
             {
-                //sab_txt.GetComponent<TextMeshPro>().text = Sabotages.sabNamesList[sabSelected];
-                sab_icon.GetComponent<SabSprites>().currentSprite = sabSelected;
-            } else
+                if (countingDown)
+                {
+                    sab_txt.GetComponent<TextMeshPro>().text = "";
+                    sab_icon.GetComponent<SabSprites>().currentSprite = -1;
+                }
+                else {
+                    sab_icon.GetComponent<SabSprites>().currentSprite = sabSelected;
+                }
+            }
+            else
             {
                 sab_txt.GetComponent<TextMeshPro>().text = "";
                 sab_icon.GetComponent<SabSprites>().currentSprite = -1;

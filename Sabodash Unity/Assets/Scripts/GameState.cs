@@ -9,7 +9,7 @@ using Unity.VisualScripting;
 public class GameState : MonoBehaviour
 {
     //Debug Variables
-    public int playersNeededToStart = 2;
+    public int playersNeededToStart = 1;
     public static float scrollSpeed = 0.05f;
 
     // State Variables
@@ -25,9 +25,16 @@ public class GameState : MonoBehaviour
     public static List<Color> possibleColours = new List<Color>();
     private static List<int> coloursInUse = new List<int>();
 
+    //Sabotage Countdown
+    public static bool counting_down = false;
+    public static GameObject countdownIcon;
+    public static float startTime;
+
+
     // Camera
-    private Camera mainCamera;
+    private static Camera mainCamera;
     private Vector3 cameraStartingPos;
+    public float countdownDistanceFromCamera = 10f;
 
     // Generator
     [SerializeField] private Generator generator;
@@ -35,7 +42,7 @@ public class GameState : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playersNeededToStart = 2;
+        playersNeededToStart = 1;
         mainCamera = FindObjectOfType<Camera>();
         cameraStartingPos = mainCamera.transform.position;
 
@@ -53,7 +60,7 @@ public class GameState : MonoBehaviour
                 possibleColours.Add(Color.HSVToRGB(i, sv_pair.Item1, sv_pair.Item2));
             }
         }
-       
+
     }
 
     // Update is called once per frame
@@ -65,6 +72,10 @@ public class GameState : MonoBehaviour
         } else
         {
             checkForGameStart();
+        }
+        if (counting_down)
+        {
+            UpdateCountdown();
         }
     }
 
@@ -114,6 +125,48 @@ public class GameState : MonoBehaviour
         }
         coloursInUse.Add(nextIndex);
         player.colourIndex = nextIndex;
+    }
+
+    static public void DisplayCountdown(Player p)
+    {
+        counting_down = true;
+        startTime = Time.time;
+        GameObject icon = p.icon_prefab;
+
+        var pos = mainCamera.transform.position + mainCamera.transform.forward * 10f + new Vector3(0f, 2f, 0f);
+        countdownIcon = Instantiate(icon, pos, Quaternion.identity);
+        countdownIcon.transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
+        countdownIcon.GetComponent<SabSprites>().currentSprite = p.sabSelected;
+        countdownIcon.GetComponent<SpriteRenderer>().sortingOrder = 1;
+    }
+
+    void UpdateCountdown()
+    {
+        // Update position
+        if (counting_down)
+        {
+            Vector3 pos = mainCamera.transform.position + mainCamera.transform.forward * 10f + new Vector3(0f, 2f, 0f);
+            countdownIcon.transform.position = pos;
+        }
+        // Make it flash
+        MakeFlash();
+    }
+
+    void MakeFlash()
+    {
+        if ((Time.time - startTime >= 0.5 && Time.time - startTime <=1) || (Time.time - startTime >= 1.5 && Time.time - startTime <= 2) || (Time.time - startTime >= 2.5 && Time.time - startTime <= 3))
+        {
+            countdownIcon.GetComponent<SpriteRenderer>().enabled = false;
+        }
+        else
+        {
+            countdownIcon.GetComponent<SpriteRenderer>().enabled = true;
+        }
+    }
+    static public void DestroyCountdown()
+    {
+        counting_down = false;
+        Destroy(countdownIcon);
     }
 
     void checkForGameStart()
