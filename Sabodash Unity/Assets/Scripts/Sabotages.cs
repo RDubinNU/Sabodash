@@ -6,7 +6,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 public class Sabotages : MonoBehaviour {
-    // Start is called before the first frame update
 
     public struct Sabotage {
         public String name;

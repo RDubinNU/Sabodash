@@ -61,11 +61,17 @@ public class Player : MonoBehaviour
     private bool grounded;
     public int sabSelected = -1;
 
+    public int sabToUse = -1;
+
     // HUD
     public GameObject textPrefab;
     public GameObject sab_txt;
     public GameObject icon_prefab;
     public GameObject sab_icon;
+
+    //Sabotage Countdown
+    public bool countingDown = false;
+    public float sabApplyTime;
 
     public Vector3 spawnPoint = new Vector3(0, 0, 0);
 
@@ -123,6 +129,7 @@ public class Player : MonoBehaviour
         parseTriggers();
         checkReady();
         updateGravity();
+        WaitForCountdown();
     }
 
     void FixedUpdate()
@@ -247,34 +254,56 @@ public class Player : MonoBehaviour
 
     void updateGravity()
     {
-        // Check for gravity change
-        if (GameState.gameSpeed != cur_game_speed)
-        {
-            rigbod.gravityScale = rigbod.gravityScale * (1 + GameState.gameSpeed - cur_game_speed);
-            cur_game_speed = GameState.gameSpeed;
-        }
+        int cur_grav_sign = Math.Sign(rigbod.gravityScale);
+        rigbod.gravityScale = cur_grav_sign * defaultGravity * GameState.gameSpeed;
     }
     void CheckForSabotageUse()
     {
         if (GameState.gameStarted && sabotage.ReadValue<float>() > 0)
         {
-            AttemptSabotageUse();
+            if (!countingDown)
+            {
+                AttemptSabotageUse();
+            }
         }
     }
+
+    void WaitForCountdown()
+    {
+        if (countingDown)
+        {
+            //Wait for countdown
+            if(Time.time - sabApplyTime >= 3)
+            {
+                //Actually apply the sabotage
+                Sabotages.ApplySabotage(sabToUse, this);
+
+                // Update CDs
+                playerSabotageDurs[sabToUse] = Sabotages.sabVars[sabToUse].dur;
+                playerGeneralSabCD = GENERAL_SABOTAGE_CD_DUR;
+
+                //Reset Countdown
+                countingDown = false;
+                GameState.DestroyCountdown();
+            }
+        }
+    }
+
 
     void AttemptSabotageUse()
     {
         if (playerGeneralSabCD == 0 && sabSelected != -1)
         {
-            Sabotages.ApplySabotage(sabSelected, this);
-            
-            // Update CDs
-            playerSabotageDurs[sabSelected] = Sabotages.sabVars[sabSelected].dur;
-            playerGeneralSabCD = GENERAL_SABOTAGE_CD_DUR;
+            // Start countdown
+            GameState.DisplayCountdown(this);
+            countingDown = true;
+            sabApplyTime = Time.time;
 
-            // Remove sabotage from player
+            //Sabotage to be used
+            sabToUse = sabSelected;
+
+            //Reset selected sabotage (the one displayed in HUD)
             sabSelected = -1;
-
         }
     }
 
@@ -313,9 +342,9 @@ public class Player : MonoBehaviour
             // Display held sabotage if you have one
             if (sabSelected != -1)
             {
-                //sab_txt.GetComponent<TextMeshPro>().text = Sabotages.sabNamesList[sabSelected];
                 sab_icon.GetComponent<SabSprites>().currentSprite = sabSelected;
-            } else
+            }
+            else
             {
                 sab_txt.GetComponent<TextMeshPro>().text = "";
                 sab_icon.GetComponent<SabSprites>().currentSprite = -1;

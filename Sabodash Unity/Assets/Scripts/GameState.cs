@@ -9,7 +9,7 @@ using Unity.VisualScripting;
 public class GameState : MonoBehaviour
 {
     //Debug Variables
-    public int playersNeededToStart = 2;
+    public int playersNeededToStart = 1;
     public static float scrollSpeed = 0.05f;
 
     // State Variables
@@ -25,9 +25,16 @@ public class GameState : MonoBehaviour
     public static List<Color> possibleColours = new List<Color>();
     private static List<int> coloursInUse = new List<int>();
 
+    //Sabotage Countdown
+    public static bool counting_down = false;
+    public static GameObject countdownIcon;
+    public static float startTime;
+
+
     // Camera
-    private Camera mainCamera;
+    private static Camera mainCamera;
     private Vector3 cameraStartingPos;
+    public float countdownDistanceFromCamera = 10f;
 
     // Generator
     [SerializeField] private Generator generator;
@@ -35,7 +42,7 @@ public class GameState : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playersNeededToStart = 2;
+        playersNeededToStart = 1;
         mainCamera = FindObjectOfType<Camera>();
         cameraStartingPos = mainCamera.transform.position;
 
@@ -53,7 +60,15 @@ public class GameState : MonoBehaviour
                 possibleColours.Add(Color.HSVToRGB(i, sv_pair.Item1, sv_pair.Item2));
             }
         }
-       
+
+    }
+
+    private void Update()
+    {
+        if (counting_down)
+        {
+            UpdateCountdown();
+        }
     }
 
     // Update is called once per frame
@@ -66,6 +81,7 @@ public class GameState : MonoBehaviour
         {
             checkForGameStart();
         }
+
     }
 
     static public void AddPlayer(Player player)
@@ -116,6 +132,49 @@ public class GameState : MonoBehaviour
         player.colourIndex = nextIndex;
     }
 
+    static public void DisplayCountdown(Player p)
+    {
+        counting_down = true;
+        startTime = Time.time;
+        GameObject icon = p.icon_prefab;
+
+        var pos = mainCamera.transform.position + mainCamera.transform.forward * 10f + new Vector3(0f, 6f, 0f);
+        countdownIcon = Instantiate(icon, pos, Quaternion.identity);
+        countdownIcon.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+        countdownIcon.GetComponent<SabSprites>().currentSprite = p.sabSelected;
+        countdownIcon.GetComponent<SpriteRenderer>().sortingOrder = 1;
+    }
+
+    void UpdateCountdown()
+    {
+        // Update position
+        if (counting_down)
+        {
+            Vector3 pos = mainCamera.transform.position + mainCamera.transform.forward * 10f + new Vector3(0f, 2f, 0f);
+            countdownIcon.transform.position = pos;
+        }
+        // Make it flash
+        MakeFlash();
+    }
+
+    void MakeFlash()
+    {
+        float curTime = Time.time - startTime;
+        if ((curTime >= 0.5 && curTime <= 1) || (curTime >= 1.5 && curTime <= 2) || (curTime >= 2.5 && curTime <= 3))
+        {
+            countdownIcon.GetComponent<SpriteRenderer>().enabled = false;
+        }
+        else
+        {
+            countdownIcon.GetComponent<SpriteRenderer>().enabled = true;
+        }
+    }
+    static public void DestroyCountdown()
+    {
+        counting_down = false;
+        Destroy(countdownIcon);
+    }
+
     void checkForGameStart()
     {
         // Game Start Behaviour
@@ -151,8 +210,8 @@ public class GameState : MonoBehaviour
         ResetLevel();
         ResetPlayers();
         ResetSabotages();
-        ResetAllSabotages();
         GiveCrown();
+        DestroyCountdown();
     }
     void resetGameState()
     {
@@ -227,19 +286,7 @@ public class GameState : MonoBehaviour
         }
 
     }
-    public static void ResetAllSabotages() {
-        // Reset all sabotage
-        foreach (Player p in FindObjectsOfType<Player>()) {
-            p.gameObject.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f); ;
-            p.sab_vel_percent = 1f;
-            p.sprite.color = GameState.possibleColours[p.colourIndex];
-            p.rigbod.gravityScale = Mathf.Abs(p.rigbod.gravityScale);
-            p.directionScale = Mathf.Abs(p.directionScale);
-            p.boxcollider.sharedMaterial = p.mat_normal;
-            p.sab_vel_percent = 1f;
-            p.outline.color = Color.black;
-        }
-    }
+
 
     public void GiveCrown() {
         int highscore = 0;
