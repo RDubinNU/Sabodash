@@ -196,7 +196,7 @@ public class GameState : MonoBehaviour
 
     void checkForReset()
     {
-        if (alivePlayers.Count < playersNeededToStart && gameStarted)
+        if (alivePlayers.Count <= 1 && gameStarted)
         {
             Reset();
         }

@@ -72,6 +72,10 @@ public class Generator : MonoBehaviour
         if (!firstSpawn)
         {
             GameState.gameSpeed *= 1.05f;
+            foreach (Player p in GameState.alivePlayers)
+            {
+                p.updateGravity();
+            }
         } else
         {
             firstSpawn = false;

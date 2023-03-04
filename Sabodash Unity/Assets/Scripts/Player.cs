@@ -122,11 +122,6 @@ public class Player : MonoBehaviour
         GameState.AddPlayer(this);
     }
 
-    private void LateUpdate()
-    {
-        updateGravity();
-    }
-
     private void Update()
     {
         updateHUD();
@@ -255,11 +250,12 @@ public class Player : MonoBehaviour
         }
     }
 
-    void updateGravity()
+    public void updateGravity()
     {
         int cur_grav_sign = Math.Sign(rigbod.gravityScale);
         rigbod.gravityScale = cur_grav_sign * defaultGravity * GameState.gameSpeed;
     }
+    
     void CheckForSabotageUse()
     {
         if (GameState.gameStarted && sabotage.ReadValue<float>() > 0)
