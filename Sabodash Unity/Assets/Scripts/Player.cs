@@ -122,12 +122,16 @@ public class Player : MonoBehaviour
         GameState.AddPlayer(this);
     }
 
+    private void LateUpdate()
+    {
+        updateGravity();
+    }
+
     private void Update()
     {
         updateHUD();
         parseTriggers();
         checkReady();
-        updateGravity();
         WaitForCountdown();
     }
 

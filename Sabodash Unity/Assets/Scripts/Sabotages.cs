@@ -40,7 +40,7 @@ public class Sabotages : MonoBehaviour {
 
         sabVars.Add(new Sabotage("Big ", 5, 1, false, 1));
         sabVars.Add(new Sabotage("Grey", 5, 1, false, 1));
-        sabVars.Add(new Sabotage("Grav", 5, 1, false, 1));
+        sabVars.Add(new Sabotage("Grav", 5, 100, false, 1));
         sabVars.Add(new Sabotage("Ctrl", 5, 1, false, 1));
         sabVars.Add(new Sabotage("Bncy", 5, 1, false, 1));
         sabVars.Add(new Sabotage("Stop", 3, 1, false, 1));
