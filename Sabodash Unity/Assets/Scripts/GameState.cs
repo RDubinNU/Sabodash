@@ -188,6 +188,8 @@ public class GameState : MonoBehaviour
             }
         }
 
+        Debug.Log(alivePlayers.Count);
+
         if (readyToStart == true && alivePlayers.Count >= playersNeededToStart)
         {
             gameStarted = true;
