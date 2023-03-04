@@ -281,7 +281,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5381761980487349185}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -9, y: -4, z: 0}
+  m_LocalPosition: {x: -10, y: -4, z: 0}
   m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -417,10 +417,13 @@ MonoBehaviour:
   outline: {fileID: 0}
   sabDisplay: {fileID: 0}
   sabSelected: -1
+  sabToUse: -1
   textPrefab: {fileID: 8266491290818602519, guid: a22d5385ab4d64d4bb8c9335d42f1763, type: 3}
   sab_txt: {fileID: 0}
   icon_prefab: {fileID: 6564120281761800626, guid: cff66a73f7820f64190ca07ac1a2fde8, type: 3}
   sab_icon: {fileID: 0}
+  countingDown: 0
+  sabApplyTime: 0
   spawnPoint: {x: 0, y: 0, z: 0}
   playerSabotageDurs: []
   playerGeneralSabCD: 0
