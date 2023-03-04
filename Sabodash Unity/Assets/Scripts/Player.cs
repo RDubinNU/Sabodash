@@ -210,7 +210,6 @@ public class Player : MonoBehaviour
 
         // Flying and jump control
         float accel_y = 0;
-
         if (jump.ReadValue<float>() > 0)
         {
             if (grounded & Time.time > last_jump + (1 / GameState.gameSpeed) * jump_cd)
@@ -224,23 +223,14 @@ public class Player : MonoBehaviour
             }
         }
 
+        if (Math.Abs(rigbod.velocity.y + accel_y) > maxvel_y * GameState.gameSpeed && Math.Sign(accel_y) == Math.Sign(rigbod.velocity.y))
+        {
+            accel_y = 0;
+        }
+
         // Acceleration Application
         Vector2 acceleration = new Vector2(accel_x, accel_y);
         rigbod.velocity = rigbod.velocity + acceleration;
-
-
-        // Fly Capping
-
-        if (rigbod.velocity.y >= maxvel_y * GameState.gameSpeed && rigbod.gravityScale > 0)
-        {
-            rigbod.velocity = new Vector2(rigbod.velocity.x,
-                                            maxvel_y * GameState.gameSpeed);
-        }
-        else if (rigbod.velocity.y <= maxvel_y * GameState.gameSpeed && rigbod.gravityScale < 0)
-        {
-            rigbod.velocity = new Vector2(rigbod.velocity.x,
-                                            -maxvel_y * GameState.gameSpeed);
-        }
 
 
         // Frictional Slowing
