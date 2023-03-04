@@ -313,7 +313,7 @@ public class Player : MonoBehaviour {
             if (ready) {
                 sab_txt.GetComponent<TextMeshPro>().text = "Ready!";
             }
-            else sab_txt.GetComponent<TextMeshPro>().text = "Wins: " + playerWins;
+            else sab_txt.GetComponent<TextMeshPro>().text = "Wins:" + playerWins;
         }
     }
 
