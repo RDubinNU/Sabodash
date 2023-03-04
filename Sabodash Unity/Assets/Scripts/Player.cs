@@ -178,6 +178,7 @@ public class Player : MonoBehaviour {
         }
         return (on_ground);
     }
+
     void MoveAnywhere() {
         // Horizontal acceleration control
         float accel_x = lr.ReadValue<float>();
@@ -254,7 +255,6 @@ public class Player : MonoBehaviour {
                 playerGeneralSabCD = GENERAL_SABOTAGE_CD_DUR;
 
                 // Reset Countdown
-                GameState.counting_down = false;
                 GameState.DestroyCountdown();
             }
         }
@@ -263,9 +263,9 @@ public class Player : MonoBehaviour {
 
     void AttemptSabotageUse() {
         if (playerGeneralSabCD == 0 && sabSelected != -1 && !GameState.counting_down) {
+            Debug.Log("Atempting");
             // Start countdown
             GameState.DisplayCountdown(this);
-            GameState.counting_down = true;
             sabApplyTime = Time.time;
 
             //Sabotage to be used
