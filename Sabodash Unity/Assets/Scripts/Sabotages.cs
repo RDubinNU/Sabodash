@@ -36,13 +36,13 @@ public class Sabotages : MonoBehaviour {
 
     void Start() {
 
-        sabVars.Add(new Sabotage("Big ", 5, false, 1));
-        sabVars.Add(new Sabotage("Grey", 5, false, 1));
-        sabVars.Add(new Sabotage("Grav", 5, false, 100));
-        sabVars.Add(new Sabotage("Ctrl", 5, false, 1));
-        sabVars.Add(new Sabotage("Bncy", 5, false, 1));
-        sabVars.Add(new Sabotage("Stop", 3, false, 1));
-        sabVars.Add(new Sabotage("Frwd", 3, false, 1));
+        sabVars.Add(new Sabotage("Big ", 5, false, 5));
+        sabVars.Add(new Sabotage("Grey", 5, false, 5));
+        sabVars.Add(new Sabotage("Grav", 5, false, 5));
+        sabVars.Add(new Sabotage("Ctrl", 5, false, 5));
+        sabVars.Add(new Sabotage("Bncy", 5, false, 5));
+        sabVars.Add(new Sabotage("Stop", 2, false, 3));
+        sabVars.Add(new Sabotage("Frwd", 3, false, 5));
 
         // Initialize control lists
         for (int i = 0; i < sabVars.Count; i++) {
