@@ -68,7 +68,8 @@ public class Player : MonoBehaviour {
     public GameObject sab_icon;
 
     //Sabotage Countdown
-    public float sabApplyTime;
+    float sabApplyTime;
+    private bool sabCalled = false;
 
     public Vector3 spawnPoint = new Vector3(0, 0, 0);
 
@@ -244,7 +245,7 @@ public class Player : MonoBehaviour {
     }
 
     void WaitForCountdown() {
-        if (GameState.counting_down && Time.time - sabApplyTime >= 3) {
+        if (GameState.counting_down && Time.time - sabApplyTime >= 3 && sabCalled) {
             // Wait for countdown
             Debug.Log(Time.time - sabApplyTime);
 
@@ -257,6 +258,7 @@ public class Player : MonoBehaviour {
 
             // Reset Countdown
             GameState.counting_down = false;
+            sabCalled = false;
             GameState.DestroyCountdown();
         }
     }
@@ -267,6 +269,7 @@ public class Player : MonoBehaviour {
             // Start countdown
             GameState.DisplayCountdown(this);
             sabApplyTime = Time.time;
+            sabCalled = true;
 
             //Sabotage to be used
             sabToUse = sabSelected;
