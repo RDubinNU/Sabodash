@@ -75,7 +75,7 @@ public class Sabotages : MonoBehaviour {
                         p.sab_vel_percent = 0.5f;
                     }
                     if (sabTriggered == 1) { p.sprite.color = Color.gray; }
-                    if (sabTriggered == 2) { p.rigbod.gravityScale = -1 * Mathf.Abs(p.rigbod.gravityScale); }
+                    if (sabTriggered == 2) { p.rigbod.gravityScale = -p.rigbod.gravityScale; }
                     if (sabTriggered == 3) { p.directionScale *= -1; }
                     if (sabTriggered == 4) { p.boxcollider.sharedMaterial = p.mat_bouncy; }
                     if (sabTriggered == 5) { p.sab_vel_percent = 0f; }
