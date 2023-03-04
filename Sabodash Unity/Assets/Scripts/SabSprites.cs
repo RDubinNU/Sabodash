@@ -34,6 +34,5 @@ public class SabSprites : MonoBehaviour
         if (currentSprite == 4) spriteRenderer.sprite = spriteBncy;
         if (currentSprite == 5) spriteRenderer.sprite = spriteStop;
         if (currentSprite == 6) spriteRenderer.sprite = spriteFrwd;
-        Debug.Log("Current sprite:"+currentSprite);
     }
 }
