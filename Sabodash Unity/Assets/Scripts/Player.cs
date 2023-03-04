@@ -204,7 +204,7 @@ public class Player : MonoBehaviour
         float accel_x = lr.ReadValue<float>();
 
         accel_x = accel_x * horizontal_accel_speed * directionScale * GameState.gameSpeed;
-        if (Math.Abs(rigbod.velocity.x + accel_x) > maxvel_x * sab_vel_percent * GameState.gameSpeed)
+        if (Math.Abs(rigbod.velocity.x + accel_x) > maxvel_x * sab_vel_percent * GameState.gameSpeed && Math.Sign(accel_x) == Math.Sign(rigbod.velocity.x))
         {
             accel_x = 0; // Clipping acceleration vs velocity allows fun side sliding on slanted surfaces
         }

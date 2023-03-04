@@ -137,6 +137,7 @@ public class GameState : MonoBehaviour
         counting_down = true;
         startTime = Time.time;
         GameObject icon = p.icon_prefab;
+        icon.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
 
         var pos = mainCamera.transform.position + mainCamera.transform.forward * 10f + new Vector3(0f, 6f, 0f);
         countdownIcon = Instantiate(icon, pos, Quaternion.identity);

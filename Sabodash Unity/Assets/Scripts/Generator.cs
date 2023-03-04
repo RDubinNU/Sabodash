@@ -71,7 +71,7 @@ public class Generator : MonoBehaviour
         // Update game speed
         if (!firstSpawn)
         {
-            GameState.gameSpeed *= 1.5f;
+            GameState.gameSpeed *= 1.05f;
         } else
         {
             firstSpawn = false;
