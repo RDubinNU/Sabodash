@@ -9,8 +9,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-public class Player : MonoBehaviour
-{
+public class Player : MonoBehaviour {
 
     // Public attributes
     public int playerID;
@@ -81,8 +80,7 @@ public class Player : MonoBehaviour
 
     public int directionScale = 1;
 
-    void Start()
-    {
+    void Start() {
 
         // Physics Instantiation
         rigbod = GetComponent<Rigidbody2D>();
@@ -100,8 +98,7 @@ public class Player : MonoBehaviour
         // Sprite Instantiation
         sprite = GetComponent<SpriteRenderer>();
         SpriteRenderer[] sprites = FindObjectOfType<SpriteRenderer>().GetComponents<SpriteRenderer>();
-        foreach(SpriteRenderer spr in sprites)
-        {
+        foreach (SpriteRenderer spr in sprites) {
             if (spr.CompareTag("Outline")) outline = spr;
             if (spr.CompareTag("SabDisplay")) sabDisplay = spr;
         }
@@ -113,8 +110,7 @@ public class Player : MonoBehaviour
         sab_icon = Instantiate(icon_prefab, transform.position, Quaternion.identity);
 
         // Sabotage instantiation
-        for (int i = 0; i < Sabotages.sabVars.Count; i++)
-        {
+        for (int i = 0; i < Sabotages.sabVars.Count; i++) {
             playerSabotageDurs.Add(-1);
         }
 
@@ -122,18 +118,15 @@ public class Player : MonoBehaviour
         GameState.AddPlayer(this);
     }
 
-    private void Update()
-    {
+    private void Update() {
         updateHUD();
         parseTriggers();
         checkReady();
         WaitForCountdown();
     }
 
-    void FixedUpdate()
-    {
-        if (GameState.alivePlayers.Contains(this))
-        {
+    void FixedUpdate() {
+        if (GameState.alivePlayers.Contains(this)) {
             // Physics updates
             grounded = IsGrounded();
             MoveAnywhere();
@@ -143,83 +136,67 @@ public class Player : MonoBehaviour
             CheckForSabotageUse();
         }
     }
-    void parseTriggers()
-    {
-        if (!GameState.gameStarted && !ready)
-        {
+    void parseTriggers() {
+        if (!GameState.gameStarted && !ready) {
             // Colour Selection
-            if (triggers.ReadValue<float>() > 0 && !triggerDown)
-            {
+            if (triggers.ReadValue<float>() > 0 && !triggerDown) {
                 triggerDown = true;
                 updatePlayerColour(1);
             }
-            else if (triggers.ReadValue<float>() < 0 && !triggerDown)
-            {
+            else if (triggers.ReadValue<float>() < 0 && !triggerDown) {
                 triggerDown = true;
                 updatePlayerColour(-1);
             }
-            else if (triggers.ReadValue<float>() == 0)
-            {
+            else if (triggers.ReadValue<float>() == 0) {
                 triggerDown = false;
             }
         }
 
     }
 
-    void checkReady()
-    {
-        if (!GameState.gameStarted)
-        {
-            if (sabotage.ReadValue<float>() > 0 && readyReleased)
-            {
+    void checkReady() {
+        if (!GameState.gameStarted) {
+            if (sabotage.ReadValue<float>() > 0 && readyReleased) {
                 ready = !ready;
                 readyReleased = false;
                 spawnPoint = rigbod.transform.position;
             }
-            else if (sabotage.ReadValue<float>() == 0)
-            {
+            else if (sabotage.ReadValue<float>() == 0) {
                 readyReleased = true;
             }
         }
     }
 
-    bool IsGrounded()
-    {
+    bool IsGrounded() {
         // Grounding check for jumps
 
         float tolerance = 0.025f;
         Vector3 raycast_origin = boxcollider.bounds.center + (Vector3)Vector2.down * boxcollider.bounds.extents.y;
         RaycastHit2D ground_raycast = Physics2D.Raycast(raycast_origin, Math.Sign(rigbod.gravityScale) * Vector2.down, tolerance);
         bool on_ground = false;
-        if (ground_raycast.collider != null && rigbod.velocity.y <= 0.05)
-        {
+        if (ground_raycast.collider != null && rigbod.velocity.y <= 0.05) {
             on_ground = true;
         }
         return (on_ground);
     }
-    void MoveAnywhere()
-    {
+    void MoveAnywhere() {
         // Horizontal acceleration control
         float accel_x = lr.ReadValue<float>();
 
         accel_x = accel_x * horizontal_accel_speed * directionScale * GameState.gameSpeed;
-        if (Math.Abs(rigbod.velocity.x + accel_x) > maxvel_x * sab_vel_percent * GameState.gameSpeed && Math.Sign(accel_x) == Math.Sign(rigbod.velocity.x))
-        {
+        if (Math.Abs(rigbod.velocity.x + accel_x) > maxvel_x * sab_vel_percent * GameState.gameSpeed && Math.Sign(accel_x) == Math.Sign(rigbod.velocity.x)) {
             accel_x = 0; // Clipping acceleration vs velocity allows fun side sliding on slanted surfaces
         }
 
         // Flying and jump control
         float accel_y = 0;
 
-        if (jump.ReadValue<float>() > 0)
-        {
-            if (grounded & Time.time > last_jump + (1 / GameState.gameSpeed) * jump_cd)
-            {
+        if (jump.ReadValue<float>() > 0) {
+            if (grounded & Time.time > last_jump + (1 / GameState.gameSpeed) * jump_cd) {
                 accel_y = jumpstrength * Math.Sign(rigbod.gravityScale) * GameState.gameSpeed;
                 last_jump = Time.time;
             }
-            else if ((Time.time > last_jump + (1/GameState.gameSpeed) * fly_delay))
-            {
+            else if ((Time.time > last_jump + (1 / GameState.gameSpeed) * fly_delay)) {
                 accel_y = fly_accel * Math.Sign(rigbod.gravityScale) * GameState.gameSpeed;
             }
         }
@@ -230,50 +207,38 @@ public class Player : MonoBehaviour
 
 
         // Fly Capping
-
-        if (rigbod.velocity.y >= maxvel_y * GameState.gameSpeed && rigbod.gravityScale > 0)
-        {
+        if (rigbod.velocity.y >= maxvel_y * GameState.gameSpeed && rigbod.gravityScale > 0) {
             rigbod.velocity = new Vector2(rigbod.velocity.x,
                                             maxvel_y * GameState.gameSpeed);
         }
-        else if (rigbod.velocity.y <= maxvel_y * GameState.gameSpeed && rigbod.gravityScale < 0)
-        {
+        else if (rigbod.velocity.y <= maxvel_y * GameState.gameSpeed && rigbod.gravityScale < 0) {
             rigbod.velocity = new Vector2(rigbod.velocity.x,
                                             -maxvel_y * GameState.gameSpeed);
         }
 
-
         // Frictional Slowing
-        if (grounded && accel_x == 0)
-        {
+        if (grounded && accel_x == 0) {
             rigbod.velocity = new Vector2(rigbod.velocity.x * 0.95f, rigbod.velocity.y);
         }
     }
 
-    public void updateGravity()
-    {
+    public void updateGravity() {
         int cur_grav_sign = Math.Sign(rigbod.gravityScale);
         rigbod.gravityScale = cur_grav_sign * defaultGravity * GameState.gameSpeed;
     }
-    
-    void CheckForSabotageUse()
-    {
-        if (GameState.gameStarted && sabotage.ReadValue<float>() > 0)
-        {
-            if (!countingDown)
-            {
+
+    void CheckForSabotageUse() {
+        if (GameState.gameStarted && sabotage.ReadValue<float>() > 0) {
+            if (!countingDown) {
                 AttemptSabotageUse();
             }
         }
     }
 
-    void WaitForCountdown()
-    {
-        if (countingDown)
-        {
+    void WaitForCountdown() {
+        if (countingDown) {
             //Wait for countdown
-            if(Time.time - sabApplyTime >= 3)
-            {
+            if (Time.time - sabApplyTime >= 3) {
                 //Actually apply the sabotage
                 Sabotages.ApplySabotage(sabToUse, this);
 
@@ -289,10 +254,8 @@ public class Player : MonoBehaviour
     }
 
 
-    void AttemptSabotageUse()
-    {
-        if (playerGeneralSabCD == 0 && sabSelected != -1)
-        {
+    void AttemptSabotageUse() {
+        if (playerGeneralSabCD == 0 && sabSelected != -1) {
             // Start countdown
             GameState.DisplayCountdown(this);
             countingDown = true;
@@ -306,89 +269,74 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void OnBecameInvisible()
-    {
-        if (GameState.gameStarted)
-        {
+    private void OnBecameInvisible() {
+        if (GameState.gameStarted) {
             GameState.RemovePlayer(this);
         }
     }
-    void OnTriggerEnter2D(Collider2D col)
-    {
-        if(col.tag == "Coin") {
+    void OnTriggerEnter2D(Collider2D col) {
+        if (col.tag == "Coin") {
 
-            if (sabSelected == -1)
-            {
+            if (sabSelected == -1) {
                 Destroy(col.gameObject);
                 sabSelected = Sabotages.GrantSabotage();
-            } else
-            {
+            }
+            else {
                 Destroy(col.gameObject);
             }
-            
+
         }
     }
 
-    void updateHUD()
-    {
+    void updateHUD() {
 
         sab_icon.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
-        if (GameState.gameStarted)
-        {
+        if (GameState.gameStarted) {
             // Display updates while running
             sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
 
             // Display held sabotage if you have one
-            if (sabSelected != -1)
-            {
+            if (sabSelected != -1) {
                 sab_icon.GetComponent<SabSprites>().currentSprite = sabSelected;
             }
-            else
-            {
+            else {
                 sab_txt.GetComponent<TextMeshPro>().text = "";
                 sab_icon.GetComponent<SabSprites>().currentSprite = -1;
             }
         }
-        else
-        {
+        else {
             // Display updates for lobby
             sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
-            if(sab_icon.GetComponent<SabSprites>().currentSprite == -2) {
+            if (sab_icon.GetComponent<SabSprites>().currentSprite == -2) {
                 sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.75f);
             }
-            if (ready)
-            {
+            if (ready) {
                 sab_txt.GetComponent<TextMeshPro>().text = "Ready!";
             }
             else sab_txt.GetComponent<TextMeshPro>().text = "Wins: " + playerWins;
         }
     }
 
-    void updatePlayerColour(int direction)
-    {
+    void updatePlayerColour(int direction) {
         GameState.GetNextColour(this, direction);
         sprite.color = GameState.possibleColours[colourIndex];
     }
 
-    public void tickSabotageTimers()
-    {
+    public void tickSabotageTimers() {
 
         // Update CDs
 
         // Update Individual Timers
-        for (int i = 0; i < playerSabotageDurs.Count; i++)
-        {
+        for (int i = 0; i < playerSabotageDurs.Count; i++) {
             // Tick timers
             playerSabotageDurs[i] -= Time.fixedDeltaTime;
 
             // Update durations and reset
-            if (playerSabotageDurs[i] < 0 && playerSabotageDurs[i] > -1)
-            {
+            if (playerSabotageDurs[i] < 0 && playerSabotageDurs[i] > -1) {
                 Sabotages.ResetSabotage(i, this);
                 playerSabotageDurs[i] = -1;
             }
-            else if (playerSabotageDurs[i] < -1)
-            {
+            else if (playerSabotageDurs[i] < -1) {
                 playerSabotageDurs[i] = -1;
             }
         }
