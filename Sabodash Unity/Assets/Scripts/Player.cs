@@ -68,7 +68,6 @@ public class Player : MonoBehaviour {
     public GameObject sab_icon;
 
     //Sabotage Countdown
-    public bool countingDown = false;
     public float sabApplyTime;
 
     public Vector3 spawnPoint = new Vector3(0, 0, 0);
@@ -240,15 +239,15 @@ public class Player : MonoBehaviour {
 
     void CheckForSabotageUse() {
         if (GameState.gameStarted && sabotage.ReadValue<float>() > 0) {
-            if (!countingDown) {
+            if (!GameState.counting_down) {
                 AttemptSabotageUse();
             }
         }
     }
 
     void WaitForCountdown() {
-        if (countingDown) {
-            //Wait for countdown
+        if (GameState.counting_down) {
+            // Wait for countdown
             if (Time.time - sabApplyTime >= 3) {
                 //Actually apply the sabotage
                 Sabotages.ApplySabotage(sabToUse, this);
@@ -257,8 +256,8 @@ public class Player : MonoBehaviour {
                 playerSabotageDurs[sabToUse] = Sabotages.sabVars[sabToUse].dur;
                 playerGeneralSabCD = GENERAL_SABOTAGE_CD_DUR;
 
-                //Reset Countdown
-                countingDown = false;
+                // Reset Countdown
+                GameState.counting_down = false;
                 GameState.DestroyCountdown();
             }
         }
@@ -269,7 +268,7 @@ public class Player : MonoBehaviour {
         if (playerGeneralSabCD == 0 && sabSelected != -1 && !GameState.counting_down) {
             // Start countdown
             GameState.DisplayCountdown(this);
-            countingDown = true;
+            GameState.counting_down = true;
             sabApplyTime = Time.time;
 
             //Sabotage to be used
