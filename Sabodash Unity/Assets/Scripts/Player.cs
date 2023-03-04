@@ -194,15 +194,12 @@ public class Player : MonoBehaviour {
             if (grounded & Time.time > last_jump + (1 / GameState.gameSpeed) * jump_cd) {
                 accel_y = jumpstrength * Math.Sign(rigbod.gravityScale) * GameState.gameSpeed;
                 last_jump = Time.time;
-                Debug.Log("Jumping");
             }
             else if ((Time.time > last_jump + (1 / GameState.gameSpeed) * fly_delay)) {
                 accel_y = fly_accel * Math.Sign(rigbod.gravityScale) * GameState.gameSpeed;
-                Debug.Log("Flying");
                 // Cap only on fly
                 if (Math.Abs(rigbod.velocity.y + accel_y) > maxvel_y * GameState.gameSpeed && Math.Sign(accel_y) == Math.Sign(rigbod.velocity.y))
                 {
-                    Debug.Log("capping");
                     accel_y = 0;
                 }
             } else
