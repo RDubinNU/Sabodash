@@ -42,7 +42,6 @@ public class GameState : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        playersNeededToStart = 1;
         mainCamera = FindObjectOfType<Camera>();
         cameraStartingPos = mainCamera.transform.position;
 
@@ -188,9 +187,7 @@ public class GameState : MonoBehaviour
             }
         }
 
-        Debug.Log(alivePlayers.Count);
-
-        if (readyToStart == true && alivePlayers.Count >= playersNeededToStart)
+        if (readyToStart == true && (alivePlayers.Count >= playersNeededToStart))
         {
             gameStarted = true;
         }
