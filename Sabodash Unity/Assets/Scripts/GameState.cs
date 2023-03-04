@@ -9,7 +9,7 @@ using Unity.VisualScripting;
 public class GameState : MonoBehaviour
 {
     //Debug Variables
-    public int playersNeededToStart = 1;
+    public int playersNeededToStart = 2;
     public static float scrollSpeed = 0.05f;
 
     // State Variables

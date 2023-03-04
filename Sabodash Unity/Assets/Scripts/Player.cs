@@ -150,7 +150,7 @@ public class Player : MonoBehaviour
     }
     void parseTriggers()
     {
-        if (!GameState.gameStarted)
+        if (!GameState.gameStarted && !ready)
         {
             // Colour Selection
             if (triggers.ReadValue<float>() > 0 && !triggerDown)
