@@ -244,26 +244,26 @@ public class Player : MonoBehaviour {
     }
 
     void WaitForCountdown() {
-        if (GameState.counting_down) {
+        if (GameState.counting_down && Time.time - sabApplyTime >= 3) {
             // Wait for countdown
-            if (Time.time - sabApplyTime >= 3) {
-                //Actually apply the sabotage
-                Sabotages.ApplySabotage(sabToUse, this);
+            Debug.Log(Time.time - sabApplyTime);
 
-                // Update CDs
-                playerSabotageDurs[sabToUse] = Sabotages.sabVars[sabToUse].dur;
-                playerGeneralSabCD = GENERAL_SABOTAGE_CD_DUR;
+            //Actually apply the sabotage
+            Sabotages.ApplySabotage(sabToUse, this);
 
-                // Reset Countdown
-                GameState.DestroyCountdown();
-            }
+            // Update CDs
+            playerSabotageDurs[sabToUse] = Sabotages.sabVars[sabToUse].dur;
+            playerGeneralSabCD = GENERAL_SABOTAGE_CD_DUR;
+
+            // Reset Countdown
+            GameState.counting_down = false;
+            GameState.DestroyCountdown();
         }
     }
 
 
     void AttemptSabotageUse() {
         if (playerGeneralSabCD == 0 && sabSelected != -1 && !GameState.counting_down) {
-            Debug.Log("Atempting");
             // Start countdown
             GameState.DisplayCountdown(this);
             sabApplyTime = Time.time;

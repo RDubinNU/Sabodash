@@ -176,7 +176,6 @@ public class GameState : MonoBehaviour
     }
     static public void DestroyCountdown()
     {
-        counting_down = false;
         Destroy(countdownIcon);
     }
 
