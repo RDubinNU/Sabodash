@@ -10,14 +10,12 @@ public class Sabotages : MonoBehaviour {
     public struct Sabotage {
         public String name;
         public int dur;
-        public int cost;
         public bool overlappable;
         public int relProb;
 
-        public Sabotage(String newname, int duration, int mycost, bool overlap, int relativeProb) {
+        public Sabotage(String newname, int duration, bool overlap, int relativeProb) {
             name = newname;
             dur = duration;
-            cost = mycost;
             overlappable = overlap;
             relProb = relativeProb;
         }
@@ -38,13 +36,13 @@ public class Sabotages : MonoBehaviour {
 
     void Start() {
 
-        sabVars.Add(new Sabotage("Big ", 5, 0, false, 1));
-        sabVars.Add(new Sabotage("Grey", 5, 0, false, 1));
-        sabVars.Add(new Sabotage("Grav", 5, 100, false, 1));
-        sabVars.Add(new Sabotage("Ctrl", 5, 0, false, 1));
-        sabVars.Add(new Sabotage("Bncy", 5, 0, false, 1));
-        sabVars.Add(new Sabotage("Stop", 3, 0, false, 1));
-        sabVars.Add(new Sabotage("Frwd", 3, 0, false, 1));
+        sabVars.Add(new Sabotage("Big ", 5, false, 1));
+        sabVars.Add(new Sabotage("Grey", 5, false, 1));
+        sabVars.Add(new Sabotage("Grav", 5, false, 100));
+        sabVars.Add(new Sabotage("Ctrl", 5, false, 1));
+        sabVars.Add(new Sabotage("Bncy", 5, false, 1));
+        sabVars.Add(new Sabotage("Stop", 3, false, 1));
+        sabVars.Add(new Sabotage("Frwd", 3, false, 1));
 
         // Initialize control lists
         for (int i = 0; i < sabVars.Count; i++) {
