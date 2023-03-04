@@ -266,23 +266,19 @@ public class GameState : MonoBehaviour
         generator.latestSectionEndPos = generator.Lobby.Find("SectionEnd").position;
         generator.SpawnLevelSection();
     }
+
     void ResetSabotages() {
         
         foreach (Player p in alivePlayers)
         {
-
             // Tick reset durations
             for (int i = 0; i < p.playerSabotageDurs.Count; i++)
             {
-                if (p.playerSabotageDurs[i] > -1)
-                {
-                    p.playerSabotageDurs[i] = -1;
-                    Sabotages.ResetSabotage(i, p);
-                }
+                p.playerSabotageDurs[i] = -1;
+                Sabotages.ResetSabotage(i, p);
             }
 
             p.playerGeneralSabCD = 0;
-            
         }
 
     }
