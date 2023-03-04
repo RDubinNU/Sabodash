@@ -211,7 +211,7 @@ public class Player : MonoBehaviour {
             rigbod.velocity = new Vector2(rigbod.velocity.x,
                                             maxvel_y * GameState.gameSpeed);
         }
-        else if (rigbod.velocity.y <= maxvel_y * GameState.gameSpeed && rigbod.gravityScale < 0) {
+        else if (rigbod.velocity.y <= -maxvel_y * GameState.gameSpeed && rigbod.gravityScale < 0) {
             rigbod.velocity = new Vector2(rigbod.velocity.x,
                                             -maxvel_y * GameState.gameSpeed);
         }
@@ -255,7 +255,7 @@ public class Player : MonoBehaviour {
 
 
     void AttemptSabotageUse() {
-        if (playerGeneralSabCD == 0 && sabSelected != -1) {
+        if (playerGeneralSabCD == 0 && sabSelected != -1 && !GameState.counting_down) {
             // Start countdown
             GameState.DisplayCountdown(this);
             countingDown = true;
