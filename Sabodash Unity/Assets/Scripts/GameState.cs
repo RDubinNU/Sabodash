@@ -109,7 +109,7 @@ public class GameState : MonoBehaviour
         }
 
         deadPlayers.Add(player);
-        resetPlayerToLobby(player);
+        resetPlayerToWaitingRoom(player);
     }
 
     static public void GetNextColour(Player player, int direction)
@@ -148,6 +148,7 @@ public class GameState : MonoBehaviour
         countdownIcon.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
         countdownIcon.GetComponent<SabSprites>().currentSprite = p.sabSelected;
         countdownIcon.GetComponent<SpriteRenderer>().sortingOrder = 1;
+        countdownIcon.GetComponent<SpriteRenderer>().color = possibleColours[p.colourIndex];
     }
 
     void UpdateCountdown()
@@ -246,16 +247,20 @@ public class GameState : MonoBehaviour
             p.ready = false;
             p.sabSelected = -1;
             p.rigbod.gravityScale = p.defaultGravity;
-            resetPlayerToLobby(p);
             alivePlayers.Add(p);
+        }
+        foreach (Player p in FindObjectsOfType<Player>()) {
+            resetPlayerToLobby(p);
         }
 
         deadPlayers.Clear();
     }
 
-    static void resetPlayerToLobby(Player player)
-    {
+    static void resetPlayerToLobby(Player player) {
         player.rigbod.position = player.spawnPoint;
+    }
+    static void resetPlayerToWaitingRoom(Player player) {
+        player.rigbod.position = new Vector3(-3,10,0);
     }
     void ResetLevel()
     {

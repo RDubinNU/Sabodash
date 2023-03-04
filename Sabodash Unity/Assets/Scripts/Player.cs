@@ -301,6 +301,7 @@ public class Player : MonoBehaviour {
     void updateHUD() {
 
         sab_icon.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
+        sab_icon.GetComponent<SpriteRenderer>().color = GameState.possibleColours[colourIndex];
         if (GameState.gameStarted) {
             // Display updates while running
             sab_txt.transform.position = new Vector2(transform.position.x, transform.position.y + 0.5f);
