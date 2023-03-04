@@ -95,6 +95,11 @@ public class GameState : MonoBehaviour
 
     static public void RemovePlayer(Player player)
     {
+        // Reset player sabotages
+        ResetPlayerSabotages(player);
+
+
+        // Remove from alive
         for (int i = 0; i < alivePlayers.Count; i++)
         {
             if (alivePlayers[i] == player)
@@ -248,6 +253,7 @@ public class GameState : MonoBehaviour
 
         deadPlayers.Clear();
     }
+
     static void resetPlayerToLobby(Player player)
     {
         player.rigbod.position = player.spawnPoint;
@@ -271,16 +277,21 @@ public class GameState : MonoBehaviour
         
         foreach (Player p in alivePlayers)
         {
-            // Tick reset durations
-            for (int i = 0; i < p.playerSabotageDurs.Count; i++)
-            {
-                p.playerSabotageDurs[i] = -1;
-                Sabotages.ResetSabotage(i, p);
-            }
-
-            p.playerGeneralSabCD = 0;
+            ResetPlayerSabotages(p);
         }
 
+    }
+
+    static void ResetPlayerSabotages(Player p)
+    {
+        // Tick reset durations
+        for (int i = 0; i < p.playerSabotageDurs.Count; i++)
+        {
+            p.playerSabotageDurs[i] = -1;
+            Sabotages.ResetSabotage(i, p);
+        }
+
+        p.playerGeneralSabCD = 0;
     }
 
 
