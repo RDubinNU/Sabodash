@@ -42,7 +42,6 @@ public class Player : MonoBehaviour
     float fly_delay = 0.2f;
     float jump_cd = 0.1f;
 
-    float cur_game_speed = 1f;
     public float defaultGravity = 2;
 
     //Variables for Bouncy Sabotage (4)
