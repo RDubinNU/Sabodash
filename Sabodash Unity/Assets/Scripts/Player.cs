@@ -215,7 +215,7 @@ public class Player : MonoBehaviour
         {
             if (grounded & Time.time > last_jump + (1 / GameState.gameSpeed) * jump_cd)
             {
-                accel_y = jumpstrength * Math.Sign(rigbod.gravityScale) * (float)Math.Sqrt(GameState.gameSpeed);
+                accel_y = jumpstrength * Math.Sign(rigbod.gravityScale) * GameState.gameSpeed;
                 last_jump = Time.time;
             }
             else if ((Time.time > last_jump + (1/GameState.gameSpeed) * fly_delay))
@@ -236,7 +236,7 @@ public class Player : MonoBehaviour
             rigbod.velocity = new Vector2(rigbod.velocity.x,
                                             maxvel_y * GameState.gameSpeed);
         }
-        else if (rigbod.velocity.y * GameState.gameSpeed <= maxvel_y && rigbod.gravityScale < 0)
+        else if (rigbod.velocity.y <= maxvel_y * GameState.gameSpeed && rigbod.gravityScale < 0)
         {
             rigbod.velocity = new Vector2(rigbod.velocity.x,
                                             -maxvel_y * GameState.gameSpeed);
