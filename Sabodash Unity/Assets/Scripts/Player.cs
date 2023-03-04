@@ -220,12 +220,13 @@ public class Player : MonoBehaviour
             else if ((Time.time > last_jump + (1/GameState.gameSpeed) * fly_delay))
             {
                 accel_y = fly_accel * Math.Sign(rigbod.gravityScale) * GameState.gameSpeed;
-            }
-        }
 
-        if (Math.Abs(rigbod.velocity.y + accel_y) > maxvel_y * GameState.gameSpeed && Math.Sign(accel_y) == Math.Sign(rigbod.velocity.y))
-        {
-            accel_y = 0;
+                // Cap only on fly
+                if (Math.Abs(rigbod.velocity.y + accel_y) > maxvel_y * GameState.gameSpeed && Math.Sign(accel_y) == Math.Sign(rigbod.velocity.y))
+                {
+                    accel_y = 0;
+                }
+            }
         }
 
         // Acceleration Application
