@@ -67,9 +67,8 @@ public class Sabotages : MonoBehaviour {
 
     public static void ApplySabotage(int sabTriggered, Player callingPlayer) {
         if ((sabVars[sabTriggered].overlappable || !sabotageInUse[sabTriggered])) {
-            Player furthest = callingPlayer;
             foreach (Player p in GameState.alivePlayers) {
-                if (p != callingPlayer && sabTriggered != 6) {
+                if (p != callingPlayer) {
                     if (sabTriggered == 0) {// Makes other players bigger and slower
                         p.gameObject.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f) * embiggenScale;
                         p.sab_vel_percent = 0.5f;
@@ -79,11 +78,11 @@ public class Sabotages : MonoBehaviour {
                     if (sabTriggered == 3) { p.directionScale *= -1; }
                     if (sabTriggered == 4) { p.boxcollider.sharedMaterial = p.mat_bouncy; }
                     if (sabTriggered == 5) { p.sab_vel_percent = 0f; }
+                    if (sabTriggered == 6) { p.transform.position = callingPlayer.transform.position; }
                     p.outline.color = callingPlayer.sprite.color;
                 }
-                else if (p.transform.position.x > furthest.transform.position.x) furthest = p;
             }
-            if(sabTriggered == 6) callingPlayer.transform.position = furthest.transform.position;
+                   
             // Sabotage succesfully used
             sabotageInUse[sabTriggered] = true;
         }
