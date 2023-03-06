@@ -250,7 +250,9 @@ public class Player : MonoBehaviour {
             Debug.Log(Time.time - sabApplyTime);
 
             //Actually apply the sabotage
-            Sabotages.ApplySabotage(sabToUse, this);
+            if (GameState.alivePlayers.Contains(this)) {
+                Sabotages.ApplySabotage(sabToUse, this);
+            }
 
             // Update CDs
             playerSabotageDurs[sabToUse] = Sabotages.sabVars[sabToUse].dur;
