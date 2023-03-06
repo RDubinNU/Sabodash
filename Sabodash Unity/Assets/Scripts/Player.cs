@@ -247,7 +247,6 @@ public class Player : MonoBehaviour {
     void WaitForCountdown() {
         if (GameState.counting_down && Time.time - sabApplyTime >= 3 && sabCalled) {
             // Wait for countdown
-            Debug.Log(Time.time - sabApplyTime);
 
             //Actually apply the sabotage
             if (GameState.alivePlayers.Contains(this)) {
