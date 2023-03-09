@@ -191,7 +191,6 @@ public class GameState : MonoBehaviour
                 readyToStart = false;
             }
         }
-
         if (readyToStart == true && (alivePlayers.Count >= playersNeededToStart))
         {
             gameStarted = true;

@@ -11,7 +11,7 @@ public class Generator : MonoBehaviour
     [SerializeField] public Transform Lobby;
     [SerializeField] private Camera cam;
 
-    private List<Transform> sections = new List<Transform>();
+    private List<GameObject> sections = new List<GameObject>();
 
     public Vector3 latestSectionEndPos;
 
@@ -23,17 +23,12 @@ public class Generator : MonoBehaviour
 
     private void Awake()
     {
-        string[] assetsPaths = AssetDatabase.GetAllAssetPaths();
-
-        foreach (string assetPath in assetsPaths)
+        for (int i = 1; i < 36; i++)
         {
-            if (assetPath.Contains("Active Sections") && assetPath.Contains(".prefab"))
-            {
-                Transform loaded_section = (Transform)AssetDatabase.LoadAssetAtPath<Transform>(assetPath);
-                sections.Add(loaded_section);
-            }
-        }
-
+            string path = "Level Sections/Active Sections/Section " + i;
+            GameObject loaded_section = Resources.Load(path) as GameObject;
+            sections.Add(loaded_section);
+        }    
     }
 
     // Start is called before the first frame update
@@ -63,7 +58,7 @@ public class Generator : MonoBehaviour
 
     public void SpawnLevelSection()
     {
-        Transform latestSectionTransform = SpawnLevelSection(latestSectionEndPos);
+        Transform latestSectionTransform = SpawnLevelSection(latestSectionEndPos).transform;
         renderedSections.Add(latestSectionTransform);
 
         latestSectionEndPos = latestSectionTransform.Find("SectionEnd").position;
@@ -84,13 +79,13 @@ public class Generator : MonoBehaviour
     }
         
 
-    private Transform SpawnLevelSection(Vector3 spawnPosition)
+    private GameObject SpawnLevelSection(Vector3 spawnPosition)
     {
 
-        Transform spawning_section = sections[Random.Range(0, sections.Count)];
+        GameObject spawning_section = sections[Random.Range(0, sections.Count)];
 
-        Transform sectiontf = Instantiate(spawning_section, spawnPosition, Quaternion.identity);
-        return sectiontf;
+        GameObject section = Instantiate(spawning_section, spawnPosition, Quaternion.identity);
+        return section;
     }
 
 }
